@@ -1,0 +1,519 @@
+```html
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zoom Chat Extractor</title>
+
+<style>
+:root{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  color:#172033;
+  background:#f4f7fb
+}
+
+*{box-sizing:border-box}
+
+body{margin:0}
+
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:28px 16px
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e3e9f2;
+  border-radius:18px;
+  box-shadow:0 8px 30px #17203312;
+  padding:22px
+}
+
+.hero{margin-bottom:18px}
+
+.hero h1{
+  margin:0 0 6px;
+  font-size:clamp(24px,4vw,36px)
+}
+
+.muted{color:#65738a}
+
+.controls{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:18px
+}
+
+input[type=file]{max-width:100%}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:700;
+  cursor:pointer;
+  background:#1457d9;
+  color:#fff
+}
+
+button.secondary{
+  background:#e8eefb;
+  color:#16408e
+}
+
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed
+}
+
+.stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:18px 0
+}
+
+.pill{
+  background:#eef4ff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:14px
+}
+
+.table-wrap{
+  overflow:auto;
+  border:1px solid #e5eaf2;
+  border-radius:12px
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:500px
+}
+
+th,td{
+  text-align:left;
+  padding:14px 16px;
+  border-bottom:1px solid #edf0f5;
+  white-space:nowrap
+}
+
+th{
+  background:#f7f9fc;
+  font-size:13px;
+  color:#526079
+}
+
+tr:last-child td{
+  border-bottom:0
+}
+
+.status{
+  font-weight:700
+}
+
+.status.help{color:#a35c00}
+.status.time{color:#6b3cc5}
+.status.others{color:#137344}
+
+.empty{
+  text-align:center;
+  padding:35px;
+  color:#65738a
+}
+
+.note{
+  margin-top:14px;
+  font-size:13px;
+  color:#65738a
+}
+
+@media print{
+  .controls,.note{display:none}
+  .card{
+    box-shadow:none;
+    border:0
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+
+<section class="hero">
+  <h1>Zoom Chat Extractor</h1>
+  <div class="muted">
+    Upload a Zoom chat .txt file. Participant names, numbers, and statuses are extracted.
+  </div>
+</section>
+
+<section class="card">
+
+<div class="controls">
+  <input id="file" type="file" accept=".txt,text/plain">
+
+  <button id="csv" class="secondary" disabled>
+    Download CSV
+  </button>
+
+  <button id="pdf" disabled>
+    Print / Save PDF
+  </button>
+</div>
+
+<div id="stats" class="stats"></div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+  <th>Participant Name</th>
+  <th>Extracted Number</th>
+  <th>Status</th>
+</tr>
+</thead>
+
+<tbody id="rows">
+
+<tr>
+  <td colspan="3" class="empty">
+    Choose a Zoom chat file to begin.
+  </td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="note">
+  Supports numbers written together, with spaces, or with hyphens.
+  All chat rows remain visible.
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+const fileInput=document.querySelector('#file');
+const rowsEl=document.querySelector('#rows');
+const statsEl=document.querySelector('#stats');
+const csvBtn=document.querySelector('#csv');
+const pdfBtn=document.querySelector('#pdf');
+
+let records=[];
+
+
+/* Zoom chat header */
+const headerPattern=
+/^(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(?:[-–—]\s*)?From\s+(.+?)\s+to\s+[^:]+:\s*(.*)$/i;
+
+
+/* Time related words */
+const timeWords=
+/\b(time|when|what time|timing|clock|hour|hours|minute|minutes|class start|start time|நேரம்|மணி)\b/i;
+
+
+/* Extract 10 digit number */
+function getNumber(message){
+
+  const text=String(message||'');
+
+  const candidates=
+    text.match(/\d[\d\s-]*\d|\d+/g)||[];
+
+  for(const candidate of candidates){
+
+    const digits=
+      candidate.replace(/\D/g,'');
+
+    if(digits.length===10){
+      return digits;
+    }
+
+  }
+
+  const allDigits=
+    text.replace(/\D/g,'');
+
+  return allDigits.length===10
+    ? allDigits
+    : '';
+}
+
+
+/* Create record */
+function makeRecord(header,messageLines){
+
+  const match=header.match(headerPattern);
+
+  if(!match)return null;
+
+  const message=
+    [match[3],...messageLines]
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g,' ')
+    .trim();
+
+  const number=getNumber(message);
+
+  let status='Others';
+
+  if(/\bhelp\b/i.test(message)){
+    status='Help';
+  }
+  else if(timeWords.test(message)){
+    status='Time';
+  }
+
+  return{
+    name:match[2].trim(),
+    number:number,
+    status:status
+  };
+}
+
+
+/* Parse Zoom chat */
+function parseChat(text){
+
+  const out=[];
+  let current=null;
+
+  for(const raw of text.split(/\r?\n/)){
+
+    const line=raw.trim();
+
+    if(!line)continue;
+
+    if(headerPattern.test(line)){
+
+      if(current){
+        out.push(
+          makeRecord(
+            current.header,
+            current.messages
+          )
+        );
+      }
+
+      current={
+        header:line,
+        messages:[]
+      };
+
+    }
+    else if(current){
+
+      current.messages.push(line);
+
+    }
+  }
+
+  if(current){
+
+    out.push(
+      makeRecord(
+        current.header,
+        current.messages
+      )
+    );
+
+  }
+
+  return out.filter(Boolean);
+}
+
+
+/* Display table */
+function render(){
+
+  rowsEl.innerHTML=
+
+    records.length
+
+    ?
+
+    records.map(r=>`
+
+      <tr>
+
+        <td>
+          ${esc(r.name)}
+        </td>
+
+        <td>
+          ${esc(r.number)}
+        </td>
+
+        <td class="status ${r.status.toLowerCase()}">
+          ${esc(r.status)}
+        </td>
+
+      </tr>
+
+    `).join('')
+
+    :
+
+    `
+      <tr>
+        <td colspan="3" class="empty">
+          No readable chat rows found.
+        </td>
+      </tr>
+    `;
+
+
+  const count=s=>
+    records.filter(r=>r.status===s).length;
+
+
+  statsEl.innerHTML=
+
+    records.length
+
+    ?
+
+    `
+      <span class="pill">
+        Rows: ${records.length}
+      </span>
+
+      <span class="pill">
+        Help: ${count('Help')}
+      </span>
+
+      <span class="pill">
+        Time: ${count('Time')}
+      </span>
+
+      <span class="pill">
+        Others: ${count('Others')}
+      </span>
+
+      <span class="pill">
+        Numbers: ${records.filter(r=>r.number).length}
+      </span>
+    `
+
+    : '';
+
+  csvBtn.disabled=
+    pdfBtn.disabled=
+    !records.length;
+}
+
+
+/* Prevent HTML issues */
+function esc(v){
+
+  return String(v).replace(
+    /[&<>"']/g,
+    c=>({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[c])
+  );
+
+}
+
+
+/* File upload */
+fileInput.addEventListener(
+  'change',
+  async()=>{
+
+    const f=fileInput.files[0];
+
+    if(!f)return;
+
+    records=
+      parseChat(
+        await f.text()
+      );
+
+    render();
+
+  }
+);
+
+
+/* CSV download */
+csvBtn.addEventListener(
+  'click',
+  ()=>{
+
+    const head=[
+      'Participant Name',
+      'Extracted Number',
+      'Status'
+    ];
+
+    const out=[
+      head,
+      ...records.map(r=>[
+        r.name,
+        r.number,
+        r.status
+      ])
+    ]
+    .map(a=>
+      a.map(v=>
+        '"'+
+        String(v).replaceAll('"','""')+
+        '"'
+      ).join(',')
+    )
+    .join('\n');
+
+    const a=
+      document.createElement('a');
+
+    a.href=
+      URL.createObjectURL(
+        new Blob(
+          [out],
+          {type:'text/csv'}
+        )
+      );
+
+    a.download=
+      'zoom-chat-status.csv';
+
+    a.click();
+
+    URL.revokeObjectURL(a.href);
+
+  }
+);
+
+
+/* Print / PDF */
+pdfBtn.addEventListener(
+  'click',
+  ()=>window.print()
+);
+
+</script>
+
+</body>
+</html>
+```
