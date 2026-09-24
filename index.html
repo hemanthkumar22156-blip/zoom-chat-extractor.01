@@ -1,1205 +1,1094 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Zoom Chat Extractor</title>
+  <title>Zoom Chat Extractor</title>
 
-<style>
+  <!-- Browser Tab Logo -->
+  <link rel="icon" type="image/png" href="favicon.png">
 
-:root{
-  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
-  color:#172033;
-  background:#f4f7fb;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-*{
-  box-sizing:border-box;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
 
-body{
-  margin:0;
-}
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 42px 28px;
+    }
 
-.wrap{
-  max-width:1200px;
-  margin:auto;
-  padding:28px 16px;
-}
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
 
-/* =========================
-   HEADER
-========================= */
+    .logo-box {
+      width: 92px;
+      height: 92px;
+      background: white;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(30, 70, 130, 0.08);
+      overflow: hidden;
+    }
 
-.hero{
-  display:flex;
-  align-items:center;
-  gap:16px;
-  margin-bottom:22px;
-}
+    .logo-box img {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+    }
 
-.logo{
-  width:72px;
-  height:72px;
-  flex:0 0 72px;
-}
+    .header h1 {
+      margin: 0;
+      font-size: 46px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: #172033;
+    }
 
-.logo svg{
-  width:100%;
-  height:100%;
-  display:block;
-}
+    .header p {
+      margin: 12px 0 0;
+      font-size: 19px;
+      color: #60708c;
+    }
 
-.hero-text h1{
-  margin:0 0 6px;
-  font-size:clamp(24px,4vw,36px);
-}
+    .header strong {
+      color: #536b8d;
+    }
 
-.muted{
-  color:#65738a;
-}
+    /* MAIN CARD */
+    .card {
+      background: white;
+      border: 1px solid #e0e7f0;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 12px 40px rgba(40, 70, 110, 0.08);
+    }
 
+    /* TOP CONTROLS */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
 
-/* =========================
-   CARD
-========================= */
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef3fb;
+      color: #3c5f93;
+      padding: 13px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #dce5f3;
+    }
 
-.card{
-  background:#fff;
-  border:1px solid #e3e9f2;
-  border-radius:18px;
-  box-shadow:0 8px 30px #17203312;
-  padding:22px;
-}
+    .file-label:hover {
+      background: #e5edf9;
+    }
 
+    #fileInput {
+      display: none;
+    }
 
-/* =========================
-   CONTROLS
-========================= */
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
 
-.controls{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  align-items:center;
-  margin-top:5px;
-}
+    .btn-csv {
+      background: #edf3fc;
+      color: #4c6e9f;
+    }
 
-input[type=file]{
-  max-width:100%;
-}
+    .btn-pdf {
+      background: #83a8e8;
+      color: white;
+    }
 
-button{
-  border:0;
-  border-radius:10px;
-  padding:11px 16px;
-  font-weight:700;
-  cursor:pointer;
-  background:#1457d9;
-  color:#fff;
-}
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
 
-button.secondary{
-  background:#e8eefb;
-  color:#16408e;
-}
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
+    /* STATS */
+    .stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
 
+    .stat {
+      background: #f5f8fd;
+      border: 1px solid #e2e9f3;
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: #506582;
+      font-size: 14px;
+      font-weight: 700;
+    }
 
-/* =========================
-   STATS
-========================= */
+    .stat span {
+      color: #1d2e47;
+      margin-left: 5px;
+    }
 
-.stats{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:18px 0;
-}
+    /* TABLE */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #dfe7f1;
+      border-radius: 18px;
+    }
 
-.pill{
-  background:#eef4ff;
-  border-radius:999px;
-  padding:8px 12px;
-  font-size:14px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
 
+    thead th {
+      background: #f5f8fc;
+      color: #405879;
+      font-size: 16px;
+      text-align: left;
+      padding: 17px 18px;
+      border-bottom: 1px solid #e1e7ef;
+      white-space: nowrap;
+    }
 
-/* =========================
-   TABLE
-========================= */
+    tbody td {
+      padding: 15px 18px;
+      border-bottom: 1px solid #edf1f6;
+      font-size: 15px;
+      color: #34445c;
+    }
 
-.table-wrap{
-  overflow:auto;
-  border:1px solid #e5eaf2;
-  border-radius:12px;
-}
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:850px;
-}
+    tbody tr:hover {
+      background: #fafcff;
+    }
 
-th,
-td{
-  text-align:left;
-  padding:12px 14px;
-  border-bottom:1px solid #edf0f5;
-  white-space:nowrap;
-}
+    .empty {
+      text-align: center;
+      padding: 55px 20px !important;
+      color: #60708c;
+      font-size: 18px;
+    }
 
-th{
-  background:#f7f9fc;
-  font-size:13px;
-  color:#526079;
-}
+    /* STATUS */
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+    }
 
-tr:last-child td{
-  border-bottom:0;
-}
+    .status-help {
+      background: #ffe8e8;
+      color: #c43b3b;
+    }
 
-.status{
-  font-weight:700;
-}
+    .status-time {
+      background: #fff3d9;
+      color: #9b6900;
+    }
 
-.status.help{
-  color:#a35c00;
-}
+    .status-others {
+      background: #eaf2ff;
+      color: #466ca4;
+    }
 
-.status.time{
-  color:#6b3cc5;
-}
+    /* FOOTER NOTE */
+    .note {
+      margin-top: 20px;
+      color: #60708c;
+      font-size: 15px;
+      line-height: 1.6;
+    }
 
-.status.others{
-  color:#137344;
-}
+    /* MOBILE */
+    @media (max-width: 700px) {
+      .container {
+        padding: 22px 14px;
+      }
 
-.empty{
-  text-align:center;
-  padding:35px;
-  color:#65738a;
-}
+      .header {
+        align-items: flex-start;
+      }
 
-.note{
-  margin-top:14px;
-  font-size:13px;
-  color:#65738a;
-}
+      .logo-box {
+        width: 65px;
+        height: 65px;
+        border-radius: 14px;
+      }
 
+      .logo-box img {
+        width: 56px;
+        height: 56px;
+      }
 
-/* =========================
-   MOBILE
-========================= */
+      .header h1 {
+        font-size: 30px;
+      }
 
-@media(max-width:600px){
+      .header p {
+        font-size: 15px;
+      }
 
-  .hero{
-    align-items:flex-start;
-  }
+      .card {
+        padding: 18px;
+        border-radius: 18px;
+      }
 
-  .logo{
-    width:58px;
-    height:58px;
-    flex-basis:58px;
-  }
+      .controls {
+        align-items: stretch;
+      }
 
-  .hero-text h1{
-    font-size:24px;
-  }
+      button,
+      .file-label {
+        width: 100%;
+      }
+    }
 
-}
+    /* PRINT */
+    @media print {
+      body {
+        background: white;
+      }
 
+      .container {
+        max-width: none;
+        padding: 0;
+      }
 
-/* =========================
-   PRINT
-========================= */
+      .header {
+        margin-bottom: 20px;
+      }
 
-@media print{
+      .controls {
+        display: none;
+      }
 
-  .controls,
-  .note{
-    display:none;
-  }
+      .stats {
+        margin-bottom: 15px;
+      }
 
-  .card{
-    box-shadow:none;
-    border:0;
-  }
+      .card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
 
-  body{
-    background:#fff;
-  }
+      .table-wrapper {
+        border: 1px solid #ccc;
+        overflow: visible;
+      }
 
-  .logo{
-    display:none;
-  }
+      table {
+        min-width: 0;
+      }
 
-}
+      .note {
+        font-size: 12px;
+      }
 
-</style>
-
+      .status {
+        border: 1px solid #999;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
-<main class="wrap">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
 
+      <div class="logo-box">
+        <img src="favicon.png" alt="Zoom Chat Extractor Logo">
+      </div>
 
-<!-- =========================
-     HEADER WITH LOGO
-========================= -->
+      <div>
+        <h1>Zoom Chat Extractor</h1>
 
-<section class="hero">
+        <p>
+          Upload a Zoom chat .txt file.
+          Duplicate numbers are removed using
+          <strong>Help → Time → Others.</strong>
+        </p>
+      </div>
 
+    </div>
 
-<div class="logo">
 
-<svg
-xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 800 800"
-role="img"
-aria-label="Zoom Chat Extractor logo"
->
+    <!-- MAIN CARD -->
+    <div class="card">
 
-<defs>
+      <!-- CONTROLS -->
+      <div class="controls">
 
-<linearGradient
-id="logoBlue"
-x1="0"
-y1="0"
-x2="1"
-y2="1"
->
+        <label class="file-label" for="fileInput">
+          Choose File
+        </label>
 
-<stop
-offset="0"
-stop-color="#2674ef"
-></stop>
+        <input
+          type="file"
+          id="fileInput"
+          accept=".txt,text/plain"
+        >
 
-<stop
-offset="1"
-stop-color="#1049b8"
-></stop>
+        <button
+          id="csvBtn"
+          class="btn-csv"
+          disabled
+        >
+          Download CSV
+        </button>
 
-</linearGradient>
+        <button
+          id="pdfBtn"
+          class="btn-pdf"
+          disabled
+        >
+          Print / Save PDF
+        </button>
 
-</defs>
+      </div>
 
 
-<rect
-width="800"
-height="800"
-rx="150"
-fill="#f7faff"
-></rect>
+      <!-- STATS -->
+      <div class="stats">
 
+        <div class="stat">
+          Unique Rows:
+          <span id="uniqueCount">0</span>
+        </div>
 
-<path
-d="M145 130h510a65 65 0 0 1 65 65v310a65 65 0 0 1-65 65H430l-115 95 18-95H145a65 65 0 0 1-65-65V195a65 65 0 0 1 65-65Z"
-fill="url(#logoBlue)"
-></path>
+        <div class="stat">
+          Help:
+          <span id="helpCount">0</span>
+        </div>
 
+        <div class="stat">
+          Time:
+          <span id="timeCount">0</span>
+        </div>
 
-<circle
-cx="400"
-cy="365"
-r="205"
-fill="#fff"
-></circle>
+        <div class="stat">
+          Others:
+          <span id="othersCount">0</span>
+        </div>
 
+        <div class="stat">
+          Numbers:
+          <span id="numberCount">0</span>
+        </div>
 
-<path
-d="M278 300 266 226l67 40c21-10 44-15 67-15s46 5 67 15l67-40-12 74c24 25 37 58 37 95 0 82-70 145-159 145s-159-63-159-145c0-37 13-70 37-95Zm-49 35c-35 9-52 25-67 42m70-20c-34 3-55 12-76 27m415-49c35 9 52 25 67 42m-70-20c34 3-55 12-76 27"
-fill="#121a2a"
-stroke="#121a2a"
-stroke-width="14"
-stroke-linecap="round"
-stroke-linejoin="round"
-></path>
+      </div>
 
 
-<path
-d="M314 390c13 20 30 30 50 30m122-30c-13 20-30 30-50 30"
-fill="none"
-stroke="#fff"
-stroke-width="12"
-stroke-linecap="round"
-></path>
+      <!-- TABLE -->
+      <div class="table-wrapper">
 
+        <table id="resultTable">
 
-<path
-d="m525 560 31 31 63-72"
-fill="none"
-stroke="#fff"
-stroke-width="24"
-stroke-linecap="round"
-stroke-linejoin="round"
-></path>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Chat Time</th>
+              <th>Participant Name</th>
+              <th>Extracted Number</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-</svg>
+          <tbody id="tableBody">
 
-</div>
+            <tr>
+              <td colspan="5" class="empty">
+                Choose a Zoom chat file to begin.
+              </td>
+            </tr>
 
+          </tbody>
 
-<div class="hero-text">
+        </table>
 
-<h1>Zoom Chat Extractor</h1>
+      </div>
 
-<div class="muted">
-Upload a Zoom chat .txt file. Duplicate numbers are removed using
-<strong>Help → Time → Others</strong>.
-</div>
 
-</div>
+      <!-- NOTE -->
+      <div class="note">
+        Duplicate numbers are filtered using:
+        <strong>Help → Time → Others.</strong>
+        The final selected message keeps its exact Chat Time,
+        and the final table is sorted by Chat Time.
+      </div>
 
-</section>
+    </div>
 
+  </div>
 
 
-<!-- =========================
-     MAIN CARD
-========================= -->
+  <script>
 
-<section class="card">
+    let records = [];
 
 
-<div class="controls">
+    /* =========================================
+       TIME HEADER PATTERN
+       ========================================= */
 
-<input
-id="file"
-type="file"
-accept=".txt,text/plain"
->
+    const headerPattern =
+      /^(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(?:[-–—]\s*)?From\s+(.+?)\s+to\s+[^:]+:\s*(.*)$/i;
 
-<button
-id="csv"
-class="secondary"
-disabled
->
-Download CSV
-</button>
 
-<button
-id="pdf"
-disabled
->
-Print / Save PDF
-</button>
+    /* =========================================
+       TIME WORDS
+       ========================================= */
 
-</div>
+    const timeWords =
+      /\b(time|when|what time|timing|clock|hour|hours|minute|minutes|class start|start time|start|schedule|நேரம்|மணி)\b/i;
 
 
-<div id="stats" class="stats"></div>
+    /* =========================================
+       STATUS PRIORITY
+       Help = 1
+       Time = 2
+       Others = 3
+       ========================================= */
 
+    function statusPriority(status) {
 
-<div class="table-wrap">
+      if (status === "Help") {
+        return 1;
+      }
 
-<table>
+      if (status === "Time") {
+        return 2;
+      }
 
-<thead>
-
-<tr>
-
-<th>S.No</th>
-
-<th>Chat Time</th>
-
-<th>Participant Name</th>
-
-<th>Extracted Number</th>
-
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-
-<tbody id="rows">
-
-<tr>
-
-<td
-colspan="5"
-class="empty"
->
-Choose a Zoom chat file to begin.
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-
-<div class="note">
-
-Duplicate numbers are filtered using:
-
-<strong>Help → Time → Others</strong>.
-
-The final selected message keeps its exact Chat Time,
-and the final table is sorted by Chat Time.
-
-</div>
-
-
-</section>
-
-</main>
-
-
-
-<script>
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const fileInput =
-document.querySelector('#file');
-
-const rowsEl =
-document.querySelector('#rows');
-
-const statsEl =
-document.querySelector('#stats');
-
-const csvBtn =
-document.querySelector('#csv');
-
-const pdfBtn =
-document.querySelector('#pdf');
-
-let records = [];
-
-
-
-/* =========================
-   ZOOM CHAT HEADER
-========================= */
-
-const headerPattern =
-/^(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(?:[-–—]\s*)?From\s+(.+?)\s+to\s+[^:]+:\s*(.*)$/i;
-
-
-
-/* =========================
-   TIME WORDS
-========================= */
-
-const timeWords =
-/\b(time|when|what time|timing|clock|hour|hours|minute|minutes|class start|start time|start|schedule|நேரம்|மணி)\b/i;
-
-
-
-/* =========================
-   PRIORITY
-========================= */
-
-function statusPriority(status){
-
-  if(status === 'Help'){
-    return 1;
-  }
-
-  if(status === 'Time'){
-    return 2;
-  }
-
-  return 3;
-}
-
-
-
-/* =========================
-   TIME TO SECONDS
-========================= */
-
-function timeToSeconds(time){
-
-  const parts =
-  String(time)
-  .split(':')
-  .map(Number);
-
-  if(parts.length === 2){
-
-    return (
-      parts[0] * 3600 +
-      parts[1] * 60
-    );
-
-  }
-
-  if(parts.length === 3){
-
-    return (
-      parts[0] * 3600 +
-      parts[1] * 60 +
-      parts[2]
-    );
-
-  }
-
-  return 0;
-}
-
-
-
-/* =========================
-   GET NUMBER
-========================= */
-
-function getNumber(message){
-
-  const text =
-  String(message || '');
-
-  const candidates =
-  text.match(/\d[\d\s-]*\d|\d+/g) || [];
-
-
-  for(const candidate of candidates){
-
-    const digits =
-    candidate.replace(/\D/g,'');
-
-    if(digits.length === 10){
-
-      return digits;
-
-    }
-
-  }
-
-
-  const allDigits =
-  text.replace(/\D/g,'');
-
-  if(allDigits.length === 10){
-
-    return allDigits;
-
-  }
-
-  return '';
-
-}
-
-
-
-/* =========================
-   GET STATUS
-========================= */
-
-function getStatus(message){
-
-  const text =
-  String(message || '');
-
-
-  if(/\bhelp\b/i.test(text)){
-
-    return 'Help';
-
-  }
-
-
-  if(timeWords.test(text)){
-
-    return 'Time';
-
-  }
-
-
-  return 'Others';
-
-}
-
-
-
-/* =========================
-   MAKE RECORD
-========================= */
-
-function makeRecord(header,messageLines){
-
-  const match =
-  header.match(headerPattern);
-
-  if(!match){
-
-    return null;
-
-  }
-
-
-  const message =
-  [match[3],...messageLines]
-  .filter(Boolean)
-  .join(' ')
-  .replace(/\s+/g,' ')
-  .trim();
-
-
-  const number =
-  getNumber(message);
-
-
-  /*
-    Number இல்லாத rows-ஐ
-    final output-க்கு வேண்டாம்.
-  */
-
-  if(!number){
-
-    return null;
-
-  }
-
-
-  return {
-
-    time:match[1],
-
-    name:match[2].trim(),
-
-    number:number,
-
-    status:getStatus(message)
-
-  };
-
-}
-
-
-
-/* =========================
-   PARSE CHAT
-========================= */
-
-function parseChat(text){
-
-  const out = [];
-
-  let current = null;
-
-
-  for(const raw of text.split(/\r?\n/)){
-
-    const line =
-    raw.trim();
-
-
-    if(!line){
-
-      continue;
-
+      return 3;
     }
 
 
-    if(headerPattern.test(line)){
+    /* =========================================
+       TIME TO SECONDS
+       ========================================= */
 
-      if(current){
+    function timeToSeconds(time) {
 
-        const record =
-        makeRecord(
-          current.header,
-          current.messages
+      const parts = String(time)
+        .split(":")
+        .map(Number);
+
+      if (parts.length === 2) {
+        return (
+          parts[0] * 3600 +
+          parts[1] * 60
         );
+      }
+
+      if (parts.length === 3) {
+        return (
+          parts[0] * 3600 +
+          parts[1] * 60 +
+          parts[2]
+        );
+      }
+
+      return 0;
+    }
 
 
-        if(record){
+    /* =========================================
+       EXTRACT 10 DIGIT PHONE NUMBER
+       Supports:
+       9876543210
+       98765 43210
+       98765-43210
+       ========================================= */
 
-          out.push(record);
+    function getNumber(message) {
+
+      const text = String(message || "");
+
+      const candidates =
+        text.match(/\d[\d\s-]*\d|\d+/g) || [];
+
+      for (const candidate of candidates) {
+
+        const digits =
+          candidate.replace(/\D/g, "");
+
+        if (digits.length === 10) {
+          return digits;
+        }
+      }
+
+
+      const allDigits =
+        text.replace(/\D/g, "");
+
+      if (allDigits.length === 10) {
+        return allDigits;
+      }
+
+      return "";
+    }
+
+
+    /* =========================================
+       GET STATUS
+       ========================================= */
+
+    function getStatus(message) {
+
+      const text = String(message || "");
+
+      if (/\bhelp\b/i.test(text)) {
+        return "Help";
+      }
+
+      if (timeWords.test(text)) {
+        return "Time";
+      }
+
+      return "Others";
+    }
+
+
+    /* =========================================
+       CREATE RECORD
+       ========================================= */
+
+    function makeRecord(time, name, message) {
+
+      const number = getNumber(message);
+
+      // Only records containing a 10-digit number
+      if (!number) {
+        return null;
+      }
+
+      return {
+        time: time,
+        name: name.trim(),
+        number: number,
+        status: getStatus(message),
+        originalMessage: message
+      };
+    }
+
+
+    /* =========================================
+       PARSE ZOOM CHAT
+       ========================================= */
+
+    function parseChat(text) {
+
+      const lines =
+        text.replace(/\r/g, "").split("\n");
+
+      const parsed = [];
+
+      let current = null;
+
+
+      for (let i = 0; i < lines.length; i++) {
+
+        const line = lines[i];
+
+        const match =
+          line.match(headerPattern);
+
+
+        /* NEW CHAT MESSAGE */
+        if (match) {
+
+          // Save previous message
+          if (current) {
+
+            const record =
+              makeRecord(
+                current.time,
+                current.name,
+                current.message
+              );
+
+            if (record) {
+              parsed.push(record);
+            }
+          }
+
+
+          current = {
+            time: match[1],
+            name: match[2],
+            message: match[3] || ""
+          };
 
         }
 
+        /* CONTINUATION LINE */
+        else if (current) {
+
+          const cleanLine = line.trim();
+
+          if (cleanLine) {
+
+            if (current.message) {
+              current.message += " ";
+            }
+
+            current.message += cleanLine;
+          }
+        }
       }
 
 
-      current = {
+      // Save final message
+      if (current) {
 
-        header:line,
+        const record =
+          makeRecord(
+            current.time,
+            current.name,
+            current.message
+          );
 
-        messages:[]
-
-      };
-
-    }
-
-    else if(current){
-
-      current.messages.push(line);
-
-    }
-
-  }
-
-
-  if(current){
-
-    const record =
-    makeRecord(
-      current.header,
-      current.messages
-    );
-
-
-    if(record){
-
-      out.push(record);
-
-    }
-
-  }
-
-
-  return out;
-
-}
-
-
-
-/* =========================
-   DUPLICATE REMOVAL
-========================= */
-
-function removeDuplicates(data){
-
-  const map =
-  new Map();
-
-
-  for(const record of data){
-
-    const number =
-    record.number;
-
-
-    if(!map.has(number)){
-
-      map.set(number,record);
-
-      continue;
-
-    }
-
-
-    const existing =
-    map.get(number);
-
-
-    const oldPriority =
-    statusPriority(
-      existing.status
-    );
-
-
-    const newPriority =
-    statusPriority(
-      record.status
-    );
-
-
-    /*
-      Higher priority wins.
-    */
-
-    if(newPriority < oldPriority){
-
-      map.set(number,record);
-
-    }
-
-
-    /*
-      Same priority:
-      latest time wins.
-    */
-
-    else if(newPriority === oldPriority){
-
-      if(
-        timeToSeconds(record.time) >
-        timeToSeconds(existing.time)
-      ){
-
-        map.set(number,record);
-
+        if (record) {
+          parsed.push(record);
+        }
       }
 
+
+      return parsed;
     }
 
-  }
+
+    /* =========================================
+       REMOVE DUPLICATES
+       PRIORITY:
+       Help → Time → Others
+
+       If same priority:
+       Latest timestamp wins
+       ========================================= */
+
+    function removeDuplicates(data) {
+
+      const map = new Map();
 
 
-  return Array.from(map.values());
+      for (const record of data) {
 
-}
+        const key = record.number;
+
+        if (!map.has(key)) {
+
+          map.set(key, record);
+
+        } else {
+
+          const existing =
+            map.get(key);
+
+          const newPriority =
+            statusPriority(record.status);
+
+          const oldPriority =
+            statusPriority(existing.status);
 
 
+          // Better priority wins
+          if (newPriority < oldPriority) {
 
-/* =========================
-   SORT BY CHAT TIME
-========================= */
+            map.set(key, record);
 
-function sortByChatTime(data){
+          }
 
-  return data.sort(
-    (a,b) => {
+          // Same priority → latest time wins
+          else if (
+            newPriority === oldPriority &&
+            timeToSeconds(record.time) >
+            timeToSeconds(existing.time)
+          ) {
 
-      return (
-        timeToSeconds(a.time) -
-        timeToSeconds(b.time)
+            map.set(key, record);
+          }
+        }
+      }
+
+
+      return Array.from(map.values());
+    }
+
+
+    /* =========================================
+       SORT BY ACTUAL CHAT TIME
+       ========================================= */
+
+    function sortByChatTime(data) {
+
+      return data.sort(function(a, b) {
+
+        return (
+          timeToSeconds(a.time) -
+          timeToSeconds(b.time)
+        );
+
+      });
+    }
+
+
+    /* =========================================
+       RENDER TABLE
+       ========================================= */
+
+    function render() {
+
+      const tbody =
+        document.getElementById("tableBody");
+
+      tbody.innerHTML = "";
+
+
+      if (records.length === 0) {
+
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty">
+              No 10-digit phone numbers found.
+            </td>
+          </tr>
+        `;
+
+        updateStats();
+
+        return;
+      }
+
+
+      records.forEach(function(record, index) {
+
+        const row =
+          document.createElement("tr");
+
+
+        let statusClass =
+          "status-others";
+
+        if (record.status === "Help") {
+          statusClass = "status-help";
+        }
+
+        else if (record.status === "Time") {
+          statusClass = "status-time";
+        }
+
+
+        row.innerHTML = `
+
+          <td>${index + 1}</td>
+
+          <td>${escapeHtml(record.time)}</td>
+
+          <td>${escapeHtml(record.name)}</td>
+
+          <td>${escapeHtml(record.number)}</td>
+
+          <td>
+            <span class="status ${statusClass}">
+              ${escapeHtml(record.status)}
+            </span>
+          </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+      });
+
+
+      updateStats();
+    }
+
+
+    /* =========================================
+       ESCAPE HTML
+       ========================================= */
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    /* =========================================
+       UPDATE STATS
+       ========================================= */
+
+    function updateStats() {
+
+      const help =
+        records.filter(
+          r => r.status === "Help"
+        ).length;
+
+      const time =
+        records.filter(
+          r => r.status === "Time"
+        ).length;
+
+      const others =
+        records.filter(
+          r => r.status === "Others"
+        ).length;
+
+
+      document.getElementById(
+        "uniqueCount"
+      ).textContent = records.length;
+
+      document.getElementById(
+        "helpCount"
+      ).textContent = help;
+
+      document.getElementById(
+        "timeCount"
+      ).textContent = time;
+
+      document.getElementById(
+        "othersCount"
+      ).textContent = others;
+
+      document.getElementById(
+        "numberCount"
+      ).textContent = records.length;
+    }
+
+
+    /* =========================================
+       FILE UPLOAD
+       ========================================= */
+
+    document
+      .getElementById("fileInput")
+      .addEventListener(
+        "change",
+        function(event) {
+
+          const file =
+            event.target.files[0];
+
+          if (!file) {
+            return;
+          }
+
+
+          const reader =
+            new FileReader();
+
+
+          reader.onload =
+            function(e) {
+
+              const text =
+                e.target.result;
+
+
+              const parsed =
+                parseChat(text);
+
+
+              records =
+                removeDuplicates(parsed);
+
+
+              records =
+                sortByChatTime(records);
+
+
+              render();
+
+
+              document.getElementById(
+                "csvBtn"
+              ).disabled =
+                records.length === 0;
+
+
+              document.getElementById(
+                "pdfBtn"
+              ).disabled =
+                records.length === 0;
+            };
+
+
+          reader.readAsText(file);
+        }
       );
 
-    }
-  );
 
-}
+    /* =========================================
+       DOWNLOAD CSV
+       ========================================= */
 
+    document
+      .getElementById("csvBtn")
+      .addEventListener(
+        "click",
+        function() {
 
+          if (!records.length) {
+            return;
+          }
 
-/* =========================
-   ESCAPE HTML
-========================= */
 
-function esc(value){
+          const rows = [];
 
-  return String(value)
-  .replace(
-    /[&<>"']/g,
 
-    c => ({
+          rows.push([
+            "S.No",
+            "Chat Time",
+            "Participant Name",
+            "Extracted Number",
+            "Status"
+          ]);
 
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
 
-    }[c])
+          records.forEach(
+            function(record, index) {
 
-  );
+              rows.push([
+                index + 1,
+                record.time,
+                record.name,
+                record.number,
+                record.status
+              ]);
 
-}
+            }
+          );
 
 
+          const csv =
+            rows
+              .map(function(row) {
 
-/* =========================
-   RENDER
-========================= */
+                return row
+                  .map(function(value) {
 
-function render(){
+                    const text =
+                      String(value)
+                        .replace(/"/g, '""');
 
-  if(!records.length){
+                    return `"${text}"`;
 
-    rowsEl.innerHTML = `
+                  })
+                  .join(",");
 
-      <tr>
+              })
+              .join("\n");
 
-        <td
-        colspan="5"
-        class="empty"
-        >
-        No phone numbers found.
-        </td>
 
-      </tr>
+          const blob =
+            new Blob(
+              [csv],
+              {
+                type: "text/csv;charset=utf-8;"
+              }
+            );
 
-    `;
 
+          const url =
+            URL.createObjectURL(blob);
 
-    statsEl.innerHTML = '';
 
-    csvBtn.disabled = true;
+          const a =
+            document.createElement("a");
 
-    pdfBtn.disabled = true;
 
-    return;
+          a.href = url;
 
-  }
+          a.download =
+            "zoom-chat-extracted.csv";
 
 
-  rowsEl.innerHTML =
+          document.body.appendChild(a);
 
-  records.map((r,i)=>`
+          a.click();
 
-    <tr>
+          document.body.removeChild(a);
 
-      <td>
-        ${i + 1}
-      </td>
+          URL.revokeObjectURL(url);
+        }
+      );
 
-      <td>
-        ${esc(r.time)}
-      </td>
 
-      <td>
-        ${esc(r.name)}
-      </td>
+    /* =========================================
+       PRINT / SAVE PDF
+       ========================================= */
 
-      <td>
-        ${esc(r.number)}
-      </td>
+    document
+      .getElementById("pdfBtn")
+      .addEventListener(
+        "click",
+        function() {
 
-      <td class="status ${r.status.toLowerCase()}">
-        ${esc(r.status)}
-      </td>
+          if (!records.length) {
+            return;
+          }
 
-    </tr>
+          window.print();
+        }
+      );
 
-  `).join('');
-
-
-  const help =
-  records.filter(
-    r => r.status === 'Help'
-  ).length;
-
-
-  const time =
-  records.filter(
-    r => r.status === 'Time'
-  ).length;
-
-
-  const others =
-  records.filter(
-    r => r.status === 'Others'
-  ).length;
-
-
-  statsEl.innerHTML = `
-
-    <span class="pill">
-      Unique Rows: ${records.length}
-    </span>
-
-    <span class="pill">
-      Help: ${help}
-    </span>
-
-    <span class="pill">
-      Time: ${time}
-    </span>
-
-    <span class="pill">
-      Others: ${others}
-    </span>
-
-    <span class="pill">
-      Numbers: ${records.length}
-    </span>
-
-  `;
-
-
-  csvBtn.disabled = false;
-
-  pdfBtn.disabled = false;
-
-}
-
-
-
-/* =========================
-   FILE UPLOAD
-========================= */
-
-fileInput.addEventListener(
-'change',
-async()=>{
-
-  const file =
-  fileInput.files[0];
-
-
-  if(!file){
-
-    return;
-
-  }
-
-
-  const text =
-  await file.text();
-
-
-  /*
-    STEP 1
-    Parse all messages
-  */
-
-  const parsed =
-  parseChat(text);
-
-
-  /*
-    STEP 2
-    Duplicate number removal
-
-    Help > Time > Others
-  */
-
-  records =
-  removeDuplicates(parsed);
-
-
-  /*
-    STEP 3
-    Sort according to
-    actual Chat Time
-  */
-
-  records =
-  sortByChatTime(records);
-
-
-  /*
-    STEP 4
-    Display
-  */
-
-  render();
-
-});
-
-
-
-/* =========================
-   CSV DOWNLOAD
-========================= */
-
-csvBtn.addEventListener(
-'click',
-()=>{
-
-  const head = [
-
-    'S.No',
-
-    'Chat Time',
-
-    'Participant Name',
-
-    'Extracted Number',
-
-    'Status'
-
-  ];
-
-
-  const data = [
-
-    head,
-
-    ...records.map(
-      (r,i)=>[
-
-        i + 1,
-
-        r.time,
-
-        r.name,
-
-        r.number,
-
-        r.status
-
-      ]
-    )
-
-  ];
-
-
-  const csv =
-
-  data
-
-  .map(row=>
-
-    row
-
-    .map(value=>
-
-      '"' +
-      String(value)
-      .replaceAll('"','""') +
-      '"'
-
-    )
-
-    .join(',')
-
-  )
-
-  .join('\n');
-
-
-  const blob =
-  new Blob(
-    [csv],
-    {
-      type:'text/csv;charset=utf-8;'
-    }
-  );
-
-
-  const url =
-  URL.createObjectURL(blob);
-
-
-  const a =
-  document.createElement('a');
-
-
-  a.href = url;
-
-  a.download =
-  'zoom-chat-status.csv';
-
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  document.body.removeChild(a);
-
-
-  URL.revokeObjectURL(url);
-
-});
-
-
-
-/* =========================
-   PRINT / PDF
-========================= */
-
-pdfBtn.addEventListener(
-'click',
-()=>{
-
-  window.print();
-
-});
-
-</script>
+  </script>
 
 </body>
 </html>
