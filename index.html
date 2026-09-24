@@ -6,9 +6,9 @@
 
   <title>Zoom Chat Extractor</title>
 
-  <!-- TAB BAR FAVICON -->
-  <link rel="icon" href="/zoom-chat-extractor.01/favicon.ico?v=2" type="image/x-icon">
-  <link rel="shortcut icon" href="/zoom-chat-extractor.01/favicon.ico?v=2" type="image/x-icon">
+  <!-- FAVICON -->
+  <link rel="icon" href="/zoom-chat-extractor.01/favicon.ico?v=10" type="image/x-icon">
+  <link rel="shortcut icon" href="/zoom-chat-extractor.01/favicon.ico?v=10" type="image/x-icon">
 
   <style>
     * {
@@ -18,91 +18,96 @@
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
+      background: #f4f7fb;
+      color: #111827;
     }
 
     .container {
       max-width: 1250px;
-      margin: 0 auto;
+      margin: auto;
       padding: 25px;
     }
 
+    /* HEADER */
+
     header {
       background: white;
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
+      border-radius: 18px;
+      padding: 20px 25px;
       display: flex;
       align-items: center;
-      gap: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      gap: 16px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
     }
 
-   header img {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  border-radius: 12px;
-}
+    header img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 14px;
+    }
 
     header h1 {
       margin: 0;
-      font-size: 26px;
-      color: #111827;
+      font-size: 28px;
     }
 
     header p {
-      margin: 5px 0 0;
-      color: #6b7280;
-      font-size: 14px;
+      margin: 6px 0 0;
+      color: #64748b;
     }
 
-    .upload-box {
+    /* CARD */
+
+    .card {
       background: white;
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
     }
 
-    .upload-box label {
+    .file-label {
       display: block;
+      font-size: 17px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     input[type="file"] {
       width: 100%;
       padding: 12px;
       border: 2px dashed #cbd5e1;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #f8fafc;
       cursor: pointer;
     }
 
+    /* BUTTONS */
+
     .buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       margin-top: 15px;
+      flex-wrap: wrap;
     }
 
     button {
       border: none;
-      border-radius: 9px;
-      padding: 11px 18px;
-      font-size: 14px;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .btn-primary {
+    .download {
       background: #2563eb;
       color: white;
     }
 
-    .btn-secondary {
+    .print {
       background: #111827;
       color: white;
     }
@@ -111,84 +116,108 @@
       opacity: 0.9;
     }
 
+    /* MESSAGE */
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* STATS */
+
     .stats {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 20px;
     }
 
     .stat {
       background: white;
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    .stat .number {
-      font-size: 26px;
-      font-weight: bold;
-      color: #111827;
-    }
-
-    .stat .label {
-      margin-top: 5px;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .table-box {
-      background: white;
       border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      color: #64748b;
+      margin-top: 5px;
+    }
+
+    /* TABLE */
+
+    .table-card {
+      background: white;
+      border-radius: 18px;
       padding: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
       overflow-x: auto;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 750px;
+      min-width: 800px;
     }
 
     th {
       background: #111827;
       color: white;
-      padding: 13px 10px;
+      padding: 14px;
       text-align: left;
-      font-size: 14px;
     }
 
     td {
-      padding: 12px 10px;
+      padding: 13px;
       border-bottom: 1px solid #e5e7eb;
-      font-size: 14px;
     }
 
     tr:hover td {
       background: #f8fafc;
     }
 
+    /* STATUS */
+
     .status {
       display: inline-block;
-      padding: 5px 10px;
+      padding: 5px 11px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: bold;
     }
 
-    .status-help {
+    .help {
       background: #fee2e2;
       color: #b91c1c;
     }
 
-    .status-time {
+    .time {
       background: #fef3c7;
       color: #92400e;
     }
 
-    .status-others {
+    .others {
       background: #e5e7eb;
       color: #374151;
     }
@@ -196,40 +225,55 @@
     .empty {
       text-align: center;
       padding: 35px;
-      color: #6b7280;
+      color: #64748b;
     }
 
-    @media (max-width: 800px) {
+    /* MOBILE */
+
+    @media (max-width: 850px) {
+
       .stats {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      header h1 {
-        font-size: 21px;
-      }
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 550px) {
+
       .container {
         padding: 12px;
+      }
+
+      header {
+        padding: 15px;
+      }
+
+      header img {
+        width: 55px;
+        height: 55px;
+      }
+
+      header h1 {
+        font-size: 21px;
       }
 
       .stats {
         grid-template-columns: 1fr 1fr;
       }
 
-      header {
-        padding: 15px;
-      }
     }
 
+    /* PRINT */
+
     @media print {
+
       body {
         background: white;
       }
 
-      .upload-box,
-      .buttons {
+      .upload-card,
+      .buttons,
+      .message {
         display: none !important;
       }
 
@@ -238,22 +282,13 @@
         padding: 0;
       }
 
-      header {
-        box-shadow: none;
-        margin-bottom: 10px;
-      }
-
-      .stats {
+      header,
+      .card,
+      .table-card,
+      .stat {
         box-shadow: none;
       }
 
-      .table-box {
-        box-shadow: none;
-      }
-
-      table {
-        min-width: 100%;
-      }
     }
   </style>
 </head>
@@ -262,70 +297,105 @@
 
 <div class="container">
 
+  <!-- HEADER -->
+
   <header>
-    <img src="./favicon.ico?v=3" alt="Zoom Chat Extractor">
+
+    <img
+      src="/zoom-chat-extractor.01/favicon.ico?v=10"
+      alt="Zoom Chat Extractor"
+    >
+
     <div>
+
       <h1>Zoom Chat Extractor</h1>
-      <p>Upload Zoom chat TXT file and extract unique phone numbers</p>
+
+      <p>
+        Upload Zoom chat TXT file and extract unique phone numbers
+      </p>
+
     </div>
+
   </header>
 
-  <div class="upload-box">
 
-    <label for="fileInput">Select Zoom Chat TXT File</label>
+  <!-- UPLOAD -->
+
+  <div class="card upload-card">
+
+    <label class="file-label">
+      Select Zoom Chat TXT File
+    </label>
 
     <input
       type="file"
       id="fileInput"
-      accept=".txt"
+      accept=".txt,text/plain"
     >
 
     <div class="buttons">
-      <button class="btn-primary" onclick="downloadCSV()">
+
+      <button
+        class="download"
+        onclick="downloadCSV()"
+      >
         Download CSV
       </button>
 
-      <button class="btn-secondary" onclick="window.print()">
+      <button
+        class="print"
+        onclick="window.print()"
+      >
         Print / Save PDF
       </button>
+
     </div>
 
+    <div id="messageBox" class="message"></div>
+
   </div>
+
+
+  <!-- STATS -->
 
   <div class="stats">
 
     <div class="stat">
-      <div class="number" id="uniqueCount">0</div>
-      <div class="label">Unique Rows</div>
+      <div class="stat-number" id="uniqueCount">0</div>
+      <div class="stat-label">Unique Rows</div>
     </div>
 
     <div class="stat">
-      <div class="number" id="helpCount">0</div>
-      <div class="label">Help</div>
+      <div class="stat-number" id="helpCount">0</div>
+      <div class="stat-label">Help</div>
     </div>
 
     <div class="stat">
-      <div class="number" id="timeCount">0</div>
-      <div class="label">Time</div>
+      <div class="stat-number" id="timeCount">0</div>
+      <div class="stat-label">Time</div>
     </div>
 
     <div class="stat">
-      <div class="number" id="othersCount">0</div>
-      <div class="label">Others</div>
+      <div class="stat-number" id="othersCount">0</div>
+      <div class="stat-label">Others</div>
     </div>
 
     <div class="stat">
-      <div class="number" id="numberCount">0</div>
-      <div class="label">Numbers</div>
+      <div class="stat-number" id="numberCount">0</div>
+      <div class="stat-label">Numbers</div>
     </div>
 
   </div>
 
-  <div class="table-box">
+
+  <!-- TABLE -->
+
+  <div class="table-card">
 
     <table>
 
       <thead>
+
         <tr>
           <th>S.No</th>
           <th>Chat Time</th>
@@ -333,14 +403,19 @@
           <th>Extracted Number</th>
           <th>Status</th>
         </tr>
+
       </thead>
 
       <tbody id="tableBody">
+
         <tr>
+
           <td colspan="5" class="empty">
-            Upload a Zoom chat TXT file to see the results
+            Upload a Zoom chat TXT file
           </td>
+
         </tr>
+
       </tbody>
 
     </table>
@@ -349,22 +424,20 @@
 
 </div>
 
+
 <script>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
 
 let records = [];
 
 
-/* =========================
-   TIME WORDS
-========================= */
-
-const timeWords =
-  /\b(time|when|what time|timing|clock|hour|hours|minute|minutes|class start|start time|start|schedule|நேரம்|மணி)\b/i;
-
-
-/* =========================
+/* =====================================================
    STATUS PRIORITY
-========================= */
+   Help > Time > Others
+===================================================== */
 
 function statusPriority(status) {
 
@@ -380,251 +453,591 @@ function statusPriority(status) {
 }
 
 
-/* =========================
+/* =====================================================
    TIME TO SECONDS
-========================= */
+===================================================== */
 
 function timeToSeconds(time) {
 
-  const parts = String(time).split(":").map(Number);
+  if (!time) {
+    return 0;
+  }
+
+  const parts = time.split(":").map(Number);
 
   if (parts.length === 2) {
-    return parts[0] * 3600 +
-           parts[1] * 60;
+
+    return (
+      parts[0] * 3600 +
+      parts[1] * 60
+    );
+
   }
 
   if (parts.length === 3) {
-    return parts[0] * 3600 +
-           parts[1] * 60 +
-           parts[2];
+
+    return (
+      parts[0] * 3600 +
+      parts[1] * 60 +
+      parts[2]
+    );
+
   }
 
   return 0;
 }
 
 
-/* =========================
-   EXTRACT PHONE NUMBER
-========================= */
+/* =====================================================
+   EXTRACT 10 DIGIT PHONE NUMBER
+===================================================== */
 
-function getNumber(message) {
+function extractPhoneNumber(message) {
 
-  const text = String(message || "");
+  if (!message) {
+    return "";
+  }
+
+  const text = String(message);
+
+
+  /*
+    Examples supported:
+
+    9876543210
+    987 654 3210
+    987-654-3210
+    9876 543 210
+  */
 
   const candidates =
-    text.match(/\d[\d\s-]*\d|\d+/g) || [];
+    text.match(/\d[\d\s-]*\d/g) || [];
+
 
   for (const candidate of candidates) {
 
     const digits =
       candidate.replace(/\D/g, "");
 
+
     if (digits.length === 10) {
+
       return digits;
+
     }
+
   }
+
+
+  /*
+    Backup check
+  */
 
   const allDigits =
     text.replace(/\D/g, "");
 
-  if (allDigits.length === 10) {
-    return allDigits;
+
+  const tenDigit =
+    allDigits.match(/\d{10}/);
+
+
+  if (tenDigit) {
+
+    return tenDigit[0];
+
   }
+
 
   return "";
 }
 
 
-/* =========================
-   GET STATUS
-========================= */
+/* =====================================================
+   DETECT STATUS
+===================================================== */
 
-function getStatus(message) {
+function detectStatus(message) {
 
-  const text = String(message || "");
+  const text =
+    String(message || "");
+
+
+  /*
+    HELP = highest priority
+  */
 
   if (/\bhelp\b/i.test(text)) {
+
     return "Help";
+
   }
 
+
+  /*
+    TIME
+  */
+
+  const timeWords =
+    /time|timing|when|schedule|hour|hours|minute|minutes|start\s*time|morning|evening|night|நேரம்|மணி/i;
+
+
   if (timeWords.test(text)) {
+
     return "Time";
+
   }
+
+
+  /*
+    DEFAULT
+  */
 
   return "Others";
 }
 
 
-/* =========================
-   MAKE RECORD
-========================= */
+/* =====================================================
+   CLEAN NAME
+===================================================== */
 
-function makeRecord(time, name, message) {
+function cleanName(name) {
 
-  const number = getNumber(message);
+  if (!name) {
+    return "";
+  }
 
-  // Only records having phone number
-  if (!number) {
+  return name.trim();
+}
+
+
+/* =====================================================
+   PARSE CHAT HEADER
+===================================================== */
+
+function parseChatHeader(line) {
+
+  if (!line) {
     return null;
   }
 
+
+  /*
+    Supported formats:
+
+    19:01:04 From Ravi to Everyone:
+    19:01 From Ravi to Everyone:
+    [19:01:04] From Ravi to Everyone:
+    19:01:04 - From Ravi to Everyone:
+    19:01:04 From Ravi:
+  */
+
+
+  const pattern =
+    /^\s*\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*(?:[-–—]\s*)?From\s+(.+?)(?:\s+to\s+[^:]+)?\s*:\s*(.*)$/i;
+
+
+  const match =
+    line.match(pattern);
+
+
+  if (!match) {
+
+    return null;
+
+  }
+
+
   return {
-    time: time,
-    name: name.trim(),
-    number: number,
-    status: getStatus(message)
+
+    time: match[1],
+
+    name: cleanName(match[2]),
+
+    message: match[3] || ""
+
   };
 }
 
 
-/* =========================
-   PARSE ZOOM CHAT
-========================= */
+/* =====================================================
+   SAVE CURRENT MESSAGE
+===================================================== */
 
-function parseChat(text) {
+function saveMessage(current, output) {
 
-  const lines =
-    text.replace(/\r/g, "").split("\n");
-
-  const data = [];
-
-  const headerPattern =
-    /^(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(?:[-–—]\s*)?From\s+(.+?)\s+to\s+[^:]+:\s*(.*)$/i;
-
-  let current = null;
-
-  for (let i = 0; i < lines.length; i++) {
-
-    const line = lines[i];
-
-    const match = line.match(headerPattern);
-
-    if (match) {
-
-      if (current) {
-
-        const record = makeRecord(
-          current.time,
-          current.name,
-          current.message
-        );
-
-        if (record) {
-          data.push(record);
-        }
-      }
-
-      current = {
-        time: match[1],
-        name: match[2],
-        message: match[3] || ""
-      };
-
-    } else if (current) {
-
-      if (line.trim() !== "") {
-
-        current.message +=
-          " " + line.trim();
-      }
-    }
+  if (!current) {
+    return;
   }
 
 
-  if (current) {
-
-    const record = makeRecord(
-      current.time,
-      current.name,
+  const phone =
+    extractPhoneNumber(
       current.message
     );
 
-    if (record) {
-      data.push(record);
-    }
+
+  /*
+    No phone number = ignore
+  */
+
+  if (!phone) {
+    return;
   }
 
-  return data;
-}
 
-
-/* =========================
-   REMOVE DUPLICATES
-========================= */
-
-function removeDuplicates(data) {
-
-  const map = new Map();
-
-  for (const item of data) {
-
-    const existing =
-      map.get(item.number);
-
-    if (!existing) {
-
-      map.set(item.number, item);
-
-      continue;
-    }
-
-
-    const newPriority =
-      statusPriority(item.status);
-
-    const oldPriority =
-      statusPriority(existing.status);
-
-
-    // Better status priority wins
-    if (newPriority < oldPriority) {
-
-      map.set(item.number, item);
-
-    }
-
-    // Same priority -> latest time wins
-    else if (newPriority === oldPriority) {
-
-      if (
-        timeToSeconds(item.time) >
-        timeToSeconds(existing.time)
-      ) {
-
-        map.set(item.number, item);
-      }
-    }
-  }
-
-  return Array.from(map.values());
-}
-
-
-/* =========================
-   SORT BY ACTUAL CHAT TIME
-========================= */
-
-function sortByChatTime(data) {
-
-  return data.sort(function(a, b) {
-
-    return (
-      timeToSeconds(a.time) -
-      timeToSeconds(b.time)
+  const status =
+    detectStatus(
+      current.message
     );
+
+
+  output.push({
+
+    time: current.time,
+
+    name: current.name,
+
+    number: phone,
+
+    status: status,
+
+    message: current.message
 
   });
 }
 
 
-/* =========================
-   RENDER TABLE
-========================= */
+/* =====================================================
+   PARSE ZOOM TXT
+===================================================== */
 
-function render() {
+function parseZoomChat(text) {
+
+  const lines =
+    text
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .split("\n");
+
+
+  const output = [];
+
+  let current = null;
+
+
+  for (let i = 0; i < lines.length; i++) {
+
+    const line = lines[i];
+
+
+    const header =
+      parseChatHeader(line);
+
+
+    /*
+      New chat message
+    */
+
+    if (header) {
+
+      /*
+        Save previous message
+      */
+
+      if (current) {
+
+        saveMessage(
+          current,
+          output
+        );
+
+      }
+
+
+      /*
+        Start new message
+      */
+
+      current = {
+
+        time: header.time,
+
+        name: header.name,
+
+        message: header.message
+
+      };
+
+
+      continue;
+    }
+
+
+    /*
+      Message continuation
+    */
+
+    if (current) {
+
+      const cleanLine =
+        line.trim();
+
+
+      if (cleanLine) {
+
+        current.message +=
+          " " + cleanLine;
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    Save final message
+  */
+
+  if (current) {
+
+    saveMessage(
+      current,
+      output
+    );
+
+  }
+
+
+  return output;
+}
+
+
+/* =====================================================
+   REMOVE DUPLICATES
+===================================================== */
+
+function removeDuplicates(data) {
+
+  const map =
+    new Map();
+
+
+  for (const item of data) {
+
+    const old =
+      map.get(item.number);
+
+
+    /*
+      First occurrence
+    */
+
+    if (!old) {
+
+      map.set(
+        item.number,
+        item
+      );
+
+      continue;
+
+    }
+
+
+    const newPriority =
+      statusPriority(
+        item.status
+      );
+
+
+    const oldPriority =
+      statusPriority(
+        old.status
+      );
+
+
+    /*
+      Priority:
+
+      Help = 1
+      Time = 2
+      Others = 3
+    */
+
+    if (newPriority < oldPriority) {
+
+      map.set(
+        item.number,
+        item
+      );
+
+      continue;
+
+    }
+
+
+    /*
+      Same status priority
+      = latest time wins
+    */
+
+    if (newPriority === oldPriority) {
+
+      if (
+        timeToSeconds(item.time) >
+        timeToSeconds(old.time)
+      ) {
+
+        map.set(
+          item.number,
+          item
+        );
+
+      }
+
+    }
+
+  }
+
+
+  return Array.from(
+    map.values()
+  );
+}
+
+
+/* =====================================================
+   SORT BY ACTUAL SELECTED CHAT TIME
+===================================================== */
+
+function sortByChatTime(data) {
+
+  return data.sort(
+    function(a, b) {
+
+      return (
+        timeToSeconds(a.time) -
+        timeToSeconds(b.time)
+      );
+
+    }
+  );
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =====================================================
+   SHOW MESSAGE
+===================================================== */
+
+function showMessage(text, type) {
+
+  const box =
+    document.getElementById(
+      "messageBox"
+    );
+
+
+  box.textContent =
+    text;
+
+
+  box.className =
+    "message " + type;
+
+
+  box.style.display =
+    "block";
+}
+
+
+/* =====================================================
+   UPDATE STATISTICS
+===================================================== */
+
+function updateStats() {
+
+  const help =
+    records.filter(
+      function(item) {
+        return item.status === "Help";
+      }
+    ).length;
+
+
+  const time =
+    records.filter(
+      function(item) {
+        return item.status === "Time";
+      }
+    ).length;
+
+
+  const others =
+    records.filter(
+      function(item) {
+        return item.status === "Others";
+      }
+    ).length;
+
+
+  document.getElementById(
+    "uniqueCount"
+  ).textContent =
+    records.length;
+
+
+  document.getElementById(
+    "helpCount"
+  ).textContent =
+    help;
+
+
+  document.getElementById(
+    "timeCount"
+  ).textContent =
+    time;
+
+
+  document.getElementById(
+    "othersCount"
+  ).textContent =
+    others;
+
+
+  document.getElementById(
+    "numberCount"
+  ).textContent =
+    records.length;
+}
+
+
+/* =====================================================
+   RENDER TABLE
+===================================================== */
+
+function renderTable() {
 
   const tbody =
-    document.getElementById("tableBody");
+    document.getElementById(
+      "tableBody"
+    );
+
 
   tbody.innerHTML = "";
 
@@ -634,7 +1047,7 @@ function render() {
     tbody.innerHTML = `
       <tr>
         <td colspan="5" class="empty">
-          No phone numbers found
+          No 10-digit phone number found
         </td>
       </tr>
     `;
@@ -645,162 +1058,234 @@ function render() {
   }
 
 
-  records.forEach(function(item, index) {
+  records.forEach(
+    function(item, index) {
 
-    const row =
-      document.createElement("tr");
+      let statusClass =
+        "others";
 
 
-    let statusClass =
-      "status-others";
+      if (item.status === "Help") {
 
-    if (item.status === "Help") {
-      statusClass = "status-help";
+        statusClass =
+          "help";
+
+      }
+      else if (item.status === "Time") {
+
+        statusClass =
+          "time";
+
+      }
+
+
+      const row =
+        document.createElement("tr");
+
+
+      row.innerHTML = `
+
+        <td>
+          ${index + 1}
+        </td>
+
+        <td>
+          ${escapeHTML(item.time)}
+        </td>
+
+        <td>
+          ${escapeHTML(item.name)}
+        </td>
+
+        <td>
+          ${escapeHTML(item.number)}
+        </td>
+
+        <td>
+          <span class="status ${statusClass}">
+            ${escapeHTML(item.status)}
+          </span>
+        </td>
+
+      `;
+
+
+      tbody.appendChild(row);
+
     }
-
-    else if (item.status === "Time") {
-      statusClass = "status-time";
-    }
-
-
-    row.innerHTML = `
-      <td>${index + 1}</td>
-
-      <td>${escapeHtml(item.time)}</td>
-
-      <td>${escapeHtml(item.name)}</td>
-
-      <td>${escapeHtml(item.number)}</td>
-
-      <td>
-        <span class="status ${statusClass}">
-          ${escapeHtml(item.status)}
-        </span>
-      </td>
-    `;
-
-
-    tbody.appendChild(row);
-
-  });
+  );
 
 
   updateStats();
 }
 
 
-/* =========================
-   UPDATE STATS
-========================= */
-
-function updateStats() {
-
-  const help =
-    records.filter(
-      item => item.status === "Help"
-    ).length;
-
-  const time =
-    records.filter(
-      item => item.status === "Time"
-    ).length;
-
-  const others =
-    records.filter(
-      item => item.status === "Others"
-    ).length;
-
-
-  document.getElementById("uniqueCount")
-    .textContent = records.length;
-
-  document.getElementById("helpCount")
-    .textContent = help;
-
-  document.getElementById("timeCount")
-    .textContent = time;
-
-  document.getElementById("othersCount")
-    .textContent = others;
-
-  document.getElementById("numberCount")
-    .textContent = records.length;
-}
-
-
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-/* =========================
+/* =====================================================
    FILE UPLOAD
-========================= */
+===================================================== */
 
 document
   .getElementById("fileInput")
-  .addEventListener("change", function(event) {
+  .addEventListener(
+    "change",
+    function(event) {
 
-    const file =
-      event.target.files[0];
+      const file =
+        event.target.files[0];
 
-    if (!file) {
-      return;
+
+      if (!file) {
+        return;
+      }
+
+
+      /*
+        Read TXT
+      */
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(e) {
+
+          try {
+
+            const text =
+              e.target.result;
+
+
+            /*
+              Parse
+            */
+
+            const parsed =
+              parseZoomChat(text);
+
+
+            /*
+              Remove duplicates
+            */
+
+            records =
+              removeDuplicates(
+                parsed
+              );
+
+
+            /*
+              IMPORTANT:
+              Sort using the selected
+              record's actual time.
+            */
+
+            records =
+              sortByChatTime(
+                records
+              );
+
+
+            /*
+              Display
+            */
+
+            renderTable();
+
+
+            /*
+              Result message
+            */
+
+            if (records.length > 0) {
+
+              showMessage(
+                "File processed successfully - " +
+                records.length +
+                " unique numbers found.",
+                "success"
+              );
+
+            }
+            else {
+
+              showMessage(
+                "File opened, but no 10-digit phone number was found.",
+                "error"
+              );
+
+            }
+
+          }
+          catch (error) {
+
+            console.error(error);
+
+            showMessage(
+              "Unable to read this Zoom TXT file.",
+              "error"
+            );
+
+          }
+
+        };
+
+
+      reader.onerror =
+        function() {
+
+          showMessage(
+            "Unable to open the TXT file.",
+            "error"
+          );
+
+        };
+
+
+      reader.readAsText(file);
+
     }
+  );
 
 
-    const reader =
-      new FileReader();
+/* =====================================================
+   CSV ESCAPE
+===================================================== */
+
+function csvEscape(value) {
+
+  const text =
+    String(value ?? "");
 
 
-    reader.onload = function(e) {
+  if (
+    text.includes(",") ||
+    text.includes('"') ||
+    text.includes("\n")
+  ) {
 
-      const text = e.target.result;
+    return '"' +
+      text.replace(/"/g, '""') +
+      '"';
 
-
-      const parsed =
-        parseChat(text);
-
-
-      records =
-        removeDuplicates(parsed);
-
-
-      // IMPORTANT:
-      // Sort selected duplicate record
-      // using its actual Chat Time
-      records =
-        sortByChatTime(records);
+  }
 
 
-      render();
-    };
+  return text;
+}
 
 
-    reader.readAsText(file);
-
-  });
-
-
-/* =========================
+/* =====================================================
    DOWNLOAD CSV
-========================= */
+===================================================== */
 
 function downloadCSV() {
 
   if (records.length === 0) {
 
-    alert("Please upload a Zoom chat TXT file first.");
+    alert(
+      "Please upload a Zoom chat TXT file first."
+    );
 
     return;
   }
@@ -810,10 +1295,10 @@ function downloadCSV() {
     "S.No,Chat Time,Participant Name,Extracted Number,Status\n";
 
 
-  records.forEach(function(item, index) {
+  records.forEach(
+    function(item, index) {
 
-    csv +=
-      [
+      csv += [
         index + 1,
         csvEscape(item.time),
         csvEscape(item.name),
@@ -821,7 +1306,8 @@ function downloadCSV() {
         csvEscape(item.status)
       ].join(",") + "\n";
 
-  });
+    }
+  );
 
 
   const blob =
@@ -837,48 +1323,26 @@ function downloadCSV() {
     URL.createObjectURL(blob);
 
 
-  const a =
+  const link =
     document.createElement("a");
 
 
-  a.href = url;
+  link.href =
+    url;
 
-  a.download =
+
+  link.download =
     "zoom_chat_extracted.csv";
 
 
-  document.body.appendChild(a);
+  document.body.appendChild(link);
 
-  a.click();
+  link.click();
 
-  document.body.removeChild(a);
+  document.body.removeChild(link);
 
 
   URL.revokeObjectURL(url);
-}
-
-
-/* =========================
-   CSV ESCAPE
-========================= */
-
-function csvEscape(value) {
-
-  const text =
-    String(value ?? "");
-
-  if (
-    text.includes(",") ||
-    text.includes('"') ||
-    text.includes("\n")
-  ) {
-
-    return '"' +
-      text.replace(/"/g, '""') +
-      '"';
-  }
-
-  return text;
 }
 
 </script>
