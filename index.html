@@ -1,33 +1,43 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Zoom Chat Extractor</title>
 
 <style>
-
 :root{
   font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
   color:#172033;
-  background:#f4f7fb
+  background:#f4f7fb;
 }
 
 *{
-  box-sizing:border-box
+  box-sizing:border-box;
 }
 
 body{
-  margin:0
+  margin:0;
 }
 
 .wrap{
-  max-width:1100px;
+  max-width:1200px;
   margin:auto;
-  padding:28px 16px
+  padding:28px 16px;
+}
+
+.hero{
+  margin-bottom:18px;
+}
+
+.hero h1{
+  margin:0 0 6px;
+  font-size:clamp(24px,4vw,36px);
+}
+
+.muted{
+  color:#65738a;
 }
 
 .card{
@@ -35,20 +45,7 @@ body{
   border:1px solid #e3e9f2;
   border-radius:18px;
   box-shadow:0 8px 30px #17203312;
-  padding:22px
-}
-
-.hero{
-  margin-bottom:18px
-}
-
-.hero h1{
-  margin:0 0 6px;
-  font-size:clamp(24px,4vw,36px)
-}
-
-.muted{
-  color:#65738a
+  padding:22px;
 }
 
 .controls{
@@ -56,11 +53,11 @@ body{
   gap:12px;
   flex-wrap:wrap;
   align-items:center;
-  margin-top:18px
+  margin-top:5px;
 }
 
 input[type=file]{
-  max-width:100%
+  max-width:100%;
 }
 
 button{
@@ -70,151 +67,157 @@ button{
   font-weight:700;
   cursor:pointer;
   background:#1457d9;
-  color:#fff
+  color:#fff;
 }
 
 button.secondary{
   background:#e8eefb;
-  color:#16408e
+  color:#16408e;
 }
 
 button:disabled{
   opacity:.5;
-  cursor:not-allowed
+  cursor:not-allowed;
 }
 
 .stats{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
-  margin:18px 0
+  margin:18px 0;
 }
 
 .pill{
   background:#eef4ff;
   border-radius:999px;
   padding:8px 12px;
-  font-size:14px
+  font-size:14px;
 }
 
 .table-wrap{
   overflow:auto;
   border:1px solid #e5eaf2;
-  border-radius:12px
+  border-radius:12px;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:500px
+  min-width:800px;
 }
 
 th,
 td{
   text-align:left;
-  padding:14px 16px;
+  padding:13px 14px;
   border-bottom:1px solid #edf0f5;
-  white-space:nowrap
+  white-space:nowrap;
 }
 
 th{
   background:#f7f9fc;
   font-size:13px;
-  color:#526079
+  color:#526079;
 }
 
 tr:last-child td{
-  border-bottom:0
+  border-bottom:0;
 }
 
 .status{
-  font-weight:700
+  font-weight:700;
 }
 
 .status.help{
-  color:#a35c00
+  color:#a35c00;
 }
 
 .status.time{
-  color:#6b3cc5
+  color:#6b3cc5;
 }
 
 .status.others{
-  color:#137344
+  color:#137344;
 }
 
 .empty{
   text-align:center;
   padding:35px;
-  color:#65738a
+  color:#65738a;
 }
 
 .note{
   margin-top:14px;
   font-size:13px;
-  color:#65738a
+  color:#65738a;
 }
 
 @media print{
 
+  body{
+    background:#fff;
+  }
+
   .controls,
   .note{
-    display:none
+    display:none;
   }
 
   .card{
     box-shadow:none;
-    border:0
+    border:0;
   }
 
+  .hero{
+    margin-bottom:10px;
+  }
+
+  table{
+    min-width:0;
+  }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 <main class="wrap">
 
 <section class="hero">
+  <h1>Zoom Chat Extractor</h1>
 
-<h1>Zoom Chat Extractor</h1>
-
-<div class="muted">
-Upload a Zoom chat .txt file. Duplicate numbers are removed using priority:
-Help → Time → Others.
-</div>
-
+  <div class="muted">
+    Upload a Zoom chat .txt file.
+    Duplicate numbers are removed using priority:
+    Help → Time → Others.
+  </div>
 </section>
 
 
 <section class="card">
 
-
 <div class="controls">
 
-<input
-  id="file"
-  type="file"
-  accept=".txt,text/plain"
->
+  <input
+    id="file"
+    type="file"
+    accept=".txt,text/plain"
+  >
 
-<button
-  id="csv"
-  class="secondary"
-  disabled
->
-Download CSV
-</button>
+  <button
+    id="csv"
+    class="secondary"
+    disabled
+  >
+    Download CSV
+  </button>
 
-<button
-  id="pdf"
-  disabled
->
-Print / Save PDF
-</button>
+  <button
+    id="pdf"
+    disabled
+  >
+    Print / Save PDF
+  </button>
 
 </div>
 
@@ -229,29 +232,21 @@ Print / Save PDF
 <thead>
 
 <tr>
-
-<th>Participant Name</th>
-
-<th>Extracted Number</th>
-
-<th>Status</th>
-
+  <th>S.No</th>
+  <th>Chat Time</th>
+  <th>Participant Name</th>
+  <th>Extracted Number</th>
+  <th>Status</th>
 </tr>
 
 </thead>
 
-
 <tbody id="rows">
 
 <tr>
-
-<td
-  colspan="3"
-  class="empty"
->
-Choose a Zoom chat file to begin.
-</td>
-
+  <td colspan="5" class="empty">
+    Choose a Zoom chat file to begin.
+  </td>
 </tr>
 
 </tbody>
@@ -262,13 +257,10 @@ Choose a Zoom chat file to begin.
 
 
 <div class="note">
-
-Duplicate number priority:
-<strong>Help → Time → Others</strong>.
-If the same status appears more than once, the latest entry is kept.
-
+  Duplicate numbers are filtered by priority:
+  Help → Time → Others.
+  The displayed time is the exact time of the selected message.
 </div>
-
 
 </section>
 
@@ -277,53 +269,67 @@ If the same status appears more than once, the latest entry is kept.
 
 <script>
 
-
-/* ================================
-   ELEMENTS
-================================ */
-
-const fileInput =
-  document.querySelector('#file');
-
-const rowsEl =
-  document.querySelector('#rows');
-
-const statsEl =
-  document.querySelector('#stats');
-
-const csvBtn =
-  document.querySelector('#csv');
-
-const pdfBtn =
-  document.querySelector('#pdf');
+const fileInput = document.querySelector('#file');
+const rowsEl = document.querySelector('#rows');
+const statsEl = document.querySelector('#stats');
+const csvBtn = document.querySelector('#csv');
+const pdfBtn = document.querySelector('#pdf');
 
 let records = [];
 
 
-/* ================================
-   ZOOM CHAT HEADER
-================================ */
+/*
+  Zoom chat header example:
+
+  19:01:04 From Ravi to Everyone:
+  9876543210
+
+  or
+
+  [19:01:04] From Ravi to Everyone:
+  9876543210
+*/
 
 const headerPattern =
 /^(?:\[)?(\d{1,2}:\d{2}(?::\d{2})?)(?:\])?\s*(?:[-–—]\s*)?From\s+(.+?)\s+to\s+[^:]+:\s*(.*)$/i;
 
 
-/* ================================
-   TIME WORDS
-================================ */
+/*
+  Words used to identify TIME messages.
+*/
 
 const timeWords =
 /\b(time|when|what time|timing|clock|hour|hours|minute|minutes|class start|start time|நேரம்|மணி)\b/i;
 
 
-/* ================================
-   GET 10 DIGIT NUMBER
-================================ */
+/*
+  Priority:
+
+  Help  = 1
+  Time  = 2
+  Others = 3
+*/
+
+const priority = {
+  Help: 1,
+  Time: 2,
+  Others: 3
+};
+
+
+/*
+  Extract 10 digit phone number.
+
+  Supports:
+
+  9876543210
+  98765 43210
+  98765-43210
+*/
 
 function getNumber(message){
 
-  const text =
-    String(message || '');
+  const text = String(message || '');
 
   const candidates =
     text.match(/\d[\d\s-]*\d|\d+/g) || [];
@@ -334,96 +340,93 @@ function getNumber(message){
       candidate.replace(/\D/g,'');
 
     if(digits.length === 10){
-
       return digits;
-
     }
-
   }
 
-  const allDigits =
-    text.replace(/\D/g,'');
-
-  return allDigits.length === 10
-    ? allDigits
-    : '';
-
+  return '';
 }
 
 
-/* ================================
-   CREATE RECORD
-================================ */
+/*
+  Decide status.
 
-function makeRecord(header,messageLines){
+  If message contains HELP:
+      Help
+
+  Else if message contains TIME words:
+      Time
+
+  Else:
+      Others
+*/
+
+function getStatus(message){
+
+  const text = String(message || '');
+
+  if(/\bhelp\b/i.test(text)){
+    return 'Help';
+  }
+
+  if(timeWords.test(text)){
+    return 'Time';
+  }
+
+  return 'Others';
+}
+
+
+/*
+  Create one chat record.
+*/
+
+function makeRecord(header, messageLines){
 
   const match =
     header.match(headerPattern);
 
   if(!match){
-
     return null;
-
   }
 
-
   const message =
-    [match[3],...messageLines]
+    [match[3], ...messageLines]
       .filter(Boolean)
       .join(' ')
       .replace(/\s+/g,' ')
       .trim();
 
-
   const number =
     getNumber(message);
 
-
-  let status =
-    'Others';
-
-
   /*
-    STATUS PRIORITY
-
-    Help  = 1
-    Time  = 2
-    Others = 3
+    IMPORTANT:
+    Only keep chats where a phone number exists.
   */
 
-  if(/\bhelp\b/i.test(message)){
-
-    status =
-      'Help';
-
+  if(!number){
+    return null;
   }
 
-  else if(timeWords.test(message)){
-
-    status =
-      'Time';
-
-  }
-
+  const status =
+    getStatus(message);
 
   return {
-
     time: match[1],
-
     name: match[2].trim(),
-
     number: number,
-
     status: status
-
   };
-
 }
 
 
-/* ================================
-   PARSE ZOOM CHAT
-================================ */
+/*
+  Read Zoom TXT file.
+
+  Every "From ... to ..." line starts
+  a new chat message.
+*/
 
 function parseChat(text){
 
@@ -431,31 +434,15 @@ function parseChat(text){
 
   let current = null;
 
+  for(const raw of text.split(/\r?\n/)){
 
-  for(
-    const raw of text.split(/\r?\n/)
-  ){
-
-    const line =
-      raw.trim();
-
+    const line = raw.trim();
 
     if(!line){
-
       continue;
-
     }
 
-
-    /*
-      New Zoom chat message
-    */
-
     if(headerPattern.test(line)){
-
-      /*
-        Save previous message
-      */
 
       if(current){
 
@@ -466,44 +453,26 @@ function parseChat(text){
           );
 
         if(record){
-
           out.push(record);
-
         }
-
       }
 
-
-      /*
-        Start new message
-      */
-
       current = {
-
         header: line,
-
         messages: []
-
       };
 
+    }else{
+
+      if(current){
+        current.messages.push(line);
+      }
     }
-
-
-    else if(current){
-
-      /*
-        Multi-line message
-      */
-
-      current.messages.push(line);
-
-    }
-
   }
 
 
   /*
-    Save final message
+    Process final chat.
   */
 
   if(current){
@@ -515,505 +484,302 @@ function parseChat(text){
       );
 
     if(record){
-
       out.push(record);
-
     }
-
   }
 
-
   return out;
-
 }
 
 
-/* ================================
-   DUPLICATE NUMBER LOGIC
-================================ */
-
 /*
+  DUPLICATE REMOVAL
 
-  PRIORITY:
+  Priority:
 
-  1. Help
-  2. Time
-  3. Others
+  Help
+  ↓
+  Time
+  ↓
+  Others
 
+  Example:
 
-  Examples:
+  7:00 Ravi   9876543210 Others
+  8:10 Ravi   9876543210 Help
 
-  Others → Help
-  RESULT = Help
+  FINAL:
 
-
-  Time → Help
-  RESULT = Help
-
-
-  Others → Time
-  RESULT = Time
-
-
-  Help → Time
-  RESULT = Help
-
-
-  Same status multiple times:
-  Latest one is kept.
-
+  8:10 Ravi   9876543210 Help
 */
 
-function removeDuplicatesByPriority(records){
+function removeDuplicates(data){
 
-  const priority = {
+  const map = new Map();
 
-    Help: 1,
-
-    Time: 2,
-
-    Others: 3
-
-  };
-
-
-  const unique =
-    new Map();
-
-
-  records.forEach(record => {
-
-
-    /*
-      No number:
-
-      Keep the row separately.
-    */
-
-    if(!record.number){
-
-      unique.set(
-        `no-number-${unique.size}`,
-        record
-      );
-
-      return;
-
-    }
-
-
-    /*
-      Check existing number
-    */
+  for(const record of data){
 
     const existing =
-      unique.get(record.number);
-
+      map.get(record.number);
 
     /*
-      First occurrence
+      First occurrence.
     */
 
     if(!existing){
 
-      unique.set(
-        record.number,
-        record
-      );
-
-      return;
-
+      map.set(record.number, record);
+      continue;
     }
 
 
-    /*
-      Compare priority
-    */
+    const currentPriority =
+      priority[record.status];
 
     const existingPriority =
       priority[existing.status];
 
-    const newPriority =
-      priority[record.status];
-
 
     /*
-      New record has HIGHER priority
+      Higher priority wins.
+
+      Help (1) beats Time (2)
+      Time (2) beats Others (3)
+    */
+
+    if(currentPriority < existingPriority){
+
+      map.set(record.number, record);
+
+    }
+
+    /*
+      If SAME priority:
+
+      Latest message wins.
 
       Example:
 
-      Others → Help
-      Help replaces Others
+      7:00 Help
+      8:10 Help
 
-      Time → Help
-      Help replaces Time
+      → 8:10 Help
     */
 
-    if(newPriority < existingPriority){
+    else if(currentPriority === existingPriority){
 
-      unique.set(
-        record.number,
-        record
-      );
-
-      return;
-
+      map.set(record.number, record);
     }
 
+  }
 
-    /*
-      Same priority:
-
-      Latest entry wins.
-    */
-
-    if(newPriority === existingPriority){
-
-      unique.set(
-        record.number,
-        record
-      );
-
-      return;
-
-    }
-
-
-    /*
-      New record has LOWER priority:
-
-      Keep existing higher-priority record.
-
-      Example:
-
-      Help → Time
-      Help stays
-
-      Help → Others
-      Help stays
-
-      Time → Others
-      Time stays
-    */
-
-  });
-
-
-  return Array.from(
-    unique.values()
-  );
-
+  return Array.from(map.values());
 }
 
 
-/* ================================
-   FINAL SORT
-
-   Help
-   Time
-   Others
-================================ */
-
-function sortByPriority(records){
-
-  const priority = {
-
-    Help: 1,
-
-    Time: 2,
-
-    Others: 3
-
-  };
-
-
-  return records.sort(
-    (a,b) => {
-
-      return (
-        priority[a.status] -
-        priority[b.status]
-      );
-
-    }
-  );
-
-}
-
-
-/* ================================
-   RENDER TABLE
-================================ */
+/*
+  Render table.
+*/
 
 function render(){
 
-  if(records.length){
+  if(!records.length){
 
     rowsEl.innerHTML =
+      '<tr>' +
+      '<td colspan="5" class="empty">' +
+      'No phone numbers found.' +
+      '</td>' +
+      '</tr>';
 
-      records.map(record => `
+    statsEl.innerHTML = '';
 
+    csvBtn.disabled = true;
+    pdfBtn.disabled = true;
+
+    return;
+  }
+
+
+  rowsEl.innerHTML =
+    records.map((r,i) => {
+
+      return `
         <tr>
 
-          <td>
-            ${esc(record.name)}
-          </td>
+          <td>${i + 1}</td>
 
-          <td>
-            ${esc(record.number)}
-          </td>
+          <td>${esc(r.time)}</td>
 
-          <td class="status ${record.status.toLowerCase()}">
-            ${esc(record.status)}
+          <td>${esc(r.name)}</td>
+
+          <td>${esc(r.number)}</td>
+
+          <td class="status ${r.status.toLowerCase()}">
+            ${esc(r.status)}
           </td>
 
         </tr>
+      `;
 
-      `).join('');
-
-  }
-
-  else{
-
-    rowsEl.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="3"
-          class="empty"
-        >
-          No readable chat rows found.
-        </td>
-
-      </tr>
-
-    `;
-
-  }
+    }).join('');
 
 
-  /*
-    Statistics
-  */
+  const helpCount =
+    records.filter(
+      r => r.status === 'Help'
+    ).length;
 
-  const count =
-    status =>
-      records.filter(
-        r => r.status === status
-      ).length;
+  const timeCount =
+    records.filter(
+      r => r.status === 'Time'
+    ).length;
 
-
-  statsEl.innerHTML =
-
-    records.length
-
-    ?
-
-    `
-
-      <span class="pill">
-        Rows: ${records.length}
-      </span>
-
-      <span class="pill">
-        Help: ${count('Help')}
-      </span>
-
-      <span class="pill">
-        Time: ${count('Time')}
-      </span>
-
-      <span class="pill">
-        Others: ${count('Others')}
-      </span>
-
-      <span class="pill">
-        Numbers: ${
-          records.filter(
-            r => r.number
-          ).length
-        }
-      </span>
-
-    `
-
-    : '';
+  const othersCount =
+    records.filter(
+      r => r.status === 'Others'
+    ).length;
 
 
-  /*
-    Enable buttons
-  */
+  statsEl.innerHTML = `
 
-  csvBtn.disabled =
-    !records.length;
+    <span class="pill">
+      Unique Rows: ${records.length}
+    </span>
 
-  pdfBtn.disabled =
-    !records.length;
+    <span class="pill">
+      Help: ${helpCount}
+    </span>
 
+    <span class="pill">
+      Time: ${timeCount}
+    </span>
+
+    <span class="pill">
+      Others: ${othersCount}
+    </span>
+
+    <span class="pill">
+      Numbers: ${records.length}
+    </span>
+
+  `;
+
+
+  csvBtn.disabled = false;
+  pdfBtn.disabled = false;
 }
 
 
-/* ================================
-   HTML ESCAPE
-================================ */
+/*
+  HTML escape.
+*/
 
 function esc(value){
 
-  return String(value).replace(
-    /[&<>"']/g,
-
-    char => ({
-
-      '&':'&amp;',
-
-      '<':'&lt;',
-
-      '>':'&gt;',
-
-      '"':'&quot;',
-
-      "'":'&#39;'
-
-    }[char])
-
-  );
-
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      c => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[c])
+    );
 }
 
 
-/* ================================
-   FILE UPLOAD
-================================ */
+/*
+  FILE UPLOAD
+*/
 
 fileInput.addEventListener(
   'change',
-
   async () => {
 
     const file =
       fileInput.files[0];
 
-
     if(!file){
-
       return;
-
     }
-
 
     const text =
       await file.text();
 
 
     /*
-      Step 1:
-      Parse all Zoom messages
+      1. Parse all chats
+      2. Keep only numbers
+      3. Remove duplicates
+      4. Apply priority
     */
 
-    const parsedRecords =
+    const allRecords =
       parseChat(text);
 
-
-    /*
-      Step 2:
-      Remove duplicate numbers
-      using Help > Time > Others
-    */
-
     records =
-      removeDuplicatesByPriority(
-        parsedRecords
-      );
+      removeDuplicates(allRecords);
 
-
-    /*
-      Step 3:
-      Sort final result
-      Help > Time > Others
-    */
-
-    records =
-      sortByPriority(records);
-
-
-    /*
-      Step 4:
-      Show result
-    */
 
     render();
-
   }
 );
 
 
-/* ================================
-   CSV DOWNLOAD
-================================ */
+/*
+  DOWNLOAD CSV
+*/
 
 csvBtn.addEventListener(
   'click',
-
   () => {
 
     const head = [
-
+      'S.No',
+      'Chat Time',
       'Participant Name',
-
       'Extracted Number',
-
       'Status'
-
     ];
 
 
     const data = [
-
       head,
 
-      ...records.map(record => [
-
-        record.name,
-
-        record.number,
-
-        record.status
-
-      ])
-
+      ...records.map(
+        (r,i) => [
+          i + 1,
+          r.time,
+          r.name,
+          r.number,
+          r.status
+        ]
+      )
     ];
 
 
     const csv =
-
       data
-
         .map(row =>
-
-          row.map(value =>
-
-            '"' +
-            String(value)
-              .replaceAll('"','""') +
-            '"'
-
-          ).join(',')
-
+          row
+            .map(value =>
+              '"' +
+              String(value)
+                .replaceAll('"','""') +
+              '"'
+            )
+            .join(',')
         )
-
         .join('\n');
 
 
     const blob =
       new Blob(
-
         [csv],
-
-        {
-          type:'text/csv;charset=utf-8;'
-        }
-
+        {type:'text/csv;charset=utf-8;'}
       );
 
 
@@ -1024,46 +790,33 @@ csvBtn.addEventListener(
     const a =
       document.createElement('a');
 
-
-    a.href =
-      url;
-
-
+    a.href = url;
     a.download =
       'zoom-chat-status.csv';
 
-
     document.body.appendChild(a);
-
 
     a.click();
 
-
     document.body.removeChild(a);
 
-
     URL.revokeObjectURL(url);
-
   }
 );
 
 
-/* ================================
-   PRINT / PDF
-================================ */
+/*
+  PRINT / SAVE PDF
+*/
 
 pdfBtn.addEventListener(
   'click',
-
   () => {
-
     window.print();
-
   }
 );
 
 </script>
 
 </body>
-
 </html>
