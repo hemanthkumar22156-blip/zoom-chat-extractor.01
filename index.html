@@ -1,2390 +1,1300 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- TAB BAR LOGO / FAVICON -->
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 
-<title>Zoom Chat Extractor</title>
+  <title>Zoom Chat Extractor</title>
 
-<link rel="icon" type="image/png" href="./favicon.png">
-<link rel="shortcut icon" type="image/png" href="./favicon.png">
-
-<style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#f4f7fb;
-    color:#222;
-}
-
-.header{
-    background:#ffffff;
-    padding:20px 30px;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-    position:sticky;
-    top:0;
-    z-index:10;
-}
-
-.header img{
-    width:48px;
-    height:48px;
-    object-fit:contain;
-    border-radius:10px;
-}
-
-.header h1{
-    margin:0;
-    font-size:25px;
-    color:#1f2937;
-}
-
-.container{
-    max-width:1250px;
-    margin:30px auto;
-    padding:0 20px;
-}
-
-.upload-box{
-    background:#fff;
-    border-radius:16px;
-    padding:30px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
-    margin-bottom:25px;
-}
-
-.upload-box h2{
-    margin-top:0;
-    color:#111827;
-}
-
-.upload-box p{
-    color:#6b7280;
-}
-
-input[type="file"]{
-    width:100%;
-    padding:14px;
-    border:2px dashed #cbd5e1;
-    border-radius:10px;
-    background:#f8fafc;
-    cursor:pointer;
-}
-
-.buttons{
-    margin-top:18px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-button{
-    border:0;
-    padding:12px 20px;
-    border-radius:9px;
-    cursor:pointer;
-    font-size:15px;
-    font-weight:bold;
-}
-
-.download-btn{
-    background:#2563eb;
-    color:white;
-}
-
-.print-btn{
-    background:#16a34a;
-    color:white;
-}
-
-.clear-btn{
-    background:#dc2626;
-    color:white;
-}
-
-button:hover{
-    opacity:.9;
-}
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:15px;
-    margin-bottom:25px;
-}
-
-.stat{
-    background:#fff;
-    padding:20px;
-    border-radius:14px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.06);
-}
-
-.stat-title{
-    color:#6b7280;
-    font-size:14px;
-    margin-bottom:8px;
-}
-
-.stat-number{
-    font-size:28px;
-    font-weight:bold;
-    color:#111827;
-}
-
-.table-box{
-    background:#fff;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
-    overflow:hidden;
-}
-
-.table-wrapper{
-    overflow-x:auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:800px;
-}
-
-thead{
-    background:#111827;
-    color:#fff;
-}
-
-th,td{
-    padding:13px 12px;
-    border-bottom:1px solid #e5e7eb;
-    text-align:left;
-    font-size:14px;
-}
-
-tbody tr:hover{
-    background:#f8fafc;
-}
-
-.number{
-    font-weight:bold;
-    color:#2563eb;
-}
-
-.status{
-    display:inline-block;
-    padding:6px 12px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.status-help{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.status-time{
-    background:#fef3c7;
-    color:#92400e;
-}
-
-.status-others{
-    background:#e5e7eb;
-    color:#374151;
-}
-
-.empty{
-    text-align:center;
-    padding:50px;
-    color:#6b7280;
-}
-
-.message-box{
-    margin-top:15px;
-    padding:12px 15px;
-    border-radius:8px;
-    background:#eff6ff;
-    color:#1e40af;
-    display:none;
-}
-
-@media(max-width:900px){
-
-    .stats{
-        grid-template-columns:repeat(2,1fr);
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-}
-
-@media(max-width:600px){
-
-    .header{
-        padding:15px;
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7fb;
+      color: #222;
     }
 
-    .header h1{
-        font-size:20px;
+    .header {
+      background: #ffffff;
+      padding: 18px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .container{
-        padding:0 10px;
-        margin-top:20px;
+    .header img {
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
+      border-radius: 8px;
     }
 
-    .upload-box{
-        padding:20px;
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #222;
     }
 
-    .stats{
-        grid-template-columns:1fr;
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
     }
 
-}
-
-@media print{
-
-    body{
-        background:#fff;
+    .upload-box {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
     }
 
-    .header{
-        position:static;
-        box-shadow:none;
+    .upload-box h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 20px;
     }
 
-    .upload-box,
-    .buttons,
-    .stats,
-    .message-box{
-        display:none !important;
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed #aaa;
+      border-radius: 10px;
+      background: #fafafa;
+      cursor: pointer;
     }
 
-    .container{
-        max-width:none;
-        margin:0;
-        padding:0;
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
 
-    .table-box{
-        box-shadow:none;
-        padding:0;
+    button {
+      border: none;
+      padding: 11px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
     }
 
-    table{
-        min-width:0;
+    .btn-download {
+      background: #198754;
+      color: white;
     }
 
-    th,td{
-        font-size:11px;
-        padding:7px;
+    .btn-print {
+      background: #0d6efd;
+      color: white;
     }
 
-}
+    .btn-clear {
+      background: #dc3545;
+      color: white;
+    }
 
-</style>
+    button:hover {
+      opacity: 0.9;
+    }
 
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .stat-card p {
+      margin: 0;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .table-box {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 750px;
+    }
+
+    th {
+      background: #212529;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 11px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-help {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-time {
+      background: #cff4fc;
+      color: #055160;
+    }
+
+    .status-others {
+      background: #e2e3e5;
+      color: #41464b;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .success {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 19px;
+      }
+    }
+
+    @media print {
+      .upload-box,
+      .buttons,
+      .stats {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        margin: 0;
+        max-width: 100%;
+      }
+
+      .table-box {
+        box-shadow: none;
+        padding: 0;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
-
-<div class="header">
-
+  <div class="header">
     <img
-        src="./favicon.ico?v=10"
-        alt="Logo"
-        onerror="this.style.display='none'"
+      src="./favicon.ico"
+      alt="Logo"
+      onerror="this.style.display='none'"
     >
-
     <h1>Zoom Chat Extractor</h1>
+  </div>
 
-</div>
-
-
-<div class="container">
-
+  <div class="container">
 
     <div class="upload-box">
 
-        <h2>Upload Zoom Chat TXT</h2>
+      <h2>Upload Zoom Chat TXT File</h2>
 
-        <p>
-            Upload your Zoom chat TXT file. Phone numbers will be automatically
-            extracted and categorized.
-        </p>
+      <input
+        type="file"
+        id="fileInput"
+        accept=".txt,text/plain"
+      >
 
-        <input
-            type="file"
-            id="fileInput"
-            accept=".txt,text/plain"
+      <div class="buttons">
+
+        <button
+          class="btn-download"
+          onclick="downloadCSV()"
         >
+          Download CSV
+        </button>
 
-        <div class="buttons">
+        <button
+          class="btn-print"
+          onclick="window.print()"
+        >
+          Print / Save PDF
+        </button>
 
-            <button
-                class="download-btn"
-                onclick="downloadCSV()"
-            >
-                Download CSV
-            </button>
+        <button
+          class="btn-clear"
+          onclick="clearData()"
+        >
+          Clear
+        </button>
 
-            <button
-                class="print-btn"
-                onclick="window.print()"
-            >
-                Print / Save PDF
-            </button>
+      </div>
 
-            <button
-                class="clear-btn"
-                onclick="clearData()"
-            >
-                Clear
-            </button>
-
-        </div>
-
-        <div
-            id="messageBox"
-            class="message-box"
-        ></div>
+      <div
+        id="message"
+        class="message"
+      ></div>
 
     </div>
 
 
     <div class="stats">
 
+      <div class="stat-card">
+        <h3>Unique Rows</h3>
+        <p id="uniqueCount">0</p>
+      </div>
 
-        <div class="stat">
+      <div class="stat-card">
+        <h3>Help</h3>
+        <p id="helpCount">0</p>
+      </div>
 
-            <div class="stat-title">
-                Unique Rows
-            </div>
+      <div class="stat-card">
+        <h3>Time</h3>
+        <p id="timeCount">0</p>
+      </div>
 
-            <div
-                class="stat-number"
-                id="uniqueCount"
-            >
-                0
-            </div>
+      <div class="stat-card">
+        <h3>Others</h3>
+        <p id="othersCount">0</p>
+      </div>
 
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Help
-            </div>
-
-            <div
-                class="stat-number"
-                id="helpCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Time
-            </div>
-
-            <div
-                class="stat-number"
-                id="timeCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Others
-            </div>
-
-            <div
-                class="stat-number"
-                id="othersCount"
-            >
-                0
-            </div>
-
-        </div>
-
-
-        <div class="stat">
-
-            <div class="stat-title">
-                Numbers
-            </div>
-
-            <div
-                class="stat-number"
-                id="numberCount"
-            >
-                0
-            </div>
-
-        </div>
-
+      <div class="stat-card">
+        <h3>Numbers</h3>
+        <p id="numberCount">0</p>
+      </div>
 
     </div>
 
 
     <div class="table-box">
 
-        <div class="table-wrapper">
+      <table id="resultTable">
 
-            <table id="resultTable">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Chat Time</th>
+            <th>Participant Name</th>
+            <th>Extracted Number</th>
+            <th>Status</th>
+          </tr>
+        </thead>
 
-                <thead>
+        <tbody id="resultBody">
+        </tbody>
 
-                    <tr>
-
-                        <th>S.No</th>
-
-                        <th>Chat Time</th>
-
-                        <th>Participant Name</th>
-
-                        <th>Extracted Number</th>
-
-                        <th>Status</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="resultBody">
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            class="empty"
-                        >
-                            Upload a Zoom TXT file to see results
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
+      </table>
 
     </div>
 
-
-</div>
+  </div>
 
 
 <script>
 
-
-/* =========================================================
-   GLOBAL DATA
-========================================================= */
-
-let finalData = [];
+let extractedRows = [];
 
 
-
-/* =========================================================
+/* =========================
    FILE UPLOAD
-========================================================= */
+========================= */
 
 document
-.getElementById("fileInput")
-.addEventListener("change", function(event){
+  .getElementById("fileInput")
+  .addEventListener("change", function(event) {
 
-    const file =
-        event.target.files[0];
+    const file = event.target.files[0];
 
+    if (!file) return;
 
-    if(!file){
+    const reader = new FileReader();
 
-        return;
+    reader.onload = function(e) {
 
-    }
+      processFile(e.target.result);
 
-
-    if(
-        !file.name.toLowerCase().endsWith(".txt") &&
-        file.type !== "text/plain"
-    ){
-
-        showMessage(
-            "Please upload a Zoom TXT file.",
-            true
-        );
-
-        return;
-
-    }
-
-
-    const reader =
-        new FileReader();
-
-
-    reader.onload =
-        function(e){
-
-            try{
-
-                const text =
-                    e.target.result;
-
-                processFile(text);
-
-            }
-            catch(error){
-
-                console.error(error);
-
-                showMessage(
-                    "Error reading the file. Please check the TXT file.",
-                    true
-                );
-
-            }
-
-        };
-
-
-    reader.onerror =
-        function(){
-
-            showMessage(
-                "Unable to read this file.",
-                true
-            );
-
-        };
-
+    };
 
     reader.readAsText(file);
 
-});
+  });
 
 
 
-/* =========================================================
-   PROCESS FILE
-========================================================= */
+/* =========================
+   SHOW MESSAGE
+========================= */
 
-function processFile(text){
+function showMessage(text, type) {
 
-    if(!text || !text.trim()){
+  const box = document.getElementById("message");
 
-        showMessage(
-            "The uploaded file is empty.",
-            true
-        );
+  box.textContent = text;
 
-        return;
+  box.className = "message " + type;
 
-    }
-
-
-    const records =
-        parseChat(text);
-
-
-    if(records.length === 0){
-
-        showMessage(
-            "No Zoom chat messages were detected in this TXT file.",
-            true
-        );
-
-        return;
-
-    }
-
-
-    const extracted = [];
-
-
-    /*
-       =====================================================
-       PENDING STATUS
-
-       Example:
-
-       Kumar -> help
-       Kumar -> 9876543210
-
-       Result:
-       9876543210 = Help
-
-
-       Ravi -> time
-       Ravi -> 9876543211
-
-       Result:
-       9876543211 = Time
-       =====================================================
-    */
-
-    const pendingStatus =
-        new Map();
-
-
-
-    records.forEach(function(record){
-
-        const participant =
-            cleanParticipant(
-                record.participant
-            );
-
-
-        const participantKey =
-            participant
-                .toLowerCase()
-                .replace(/\s+/g," ")
-                .trim();
-
-
-        const message =
-            normalizeMessage(
-                record.message
-            );
-
-
-        const number =
-            getNumber(message);
-
-
-
-        /* =================================================
-           EMPTY MESSAGE
-        ================================================= */
-
-        if(!message){
-
-            return;
-
-        }
-
-
-
-        /* =================================================
-           STANDALONE HELP
-
-           help
-
-           No row.
-
-           Save pending Help.
-        ================================================= */
-
-        if(
-            !number &&
-            isStandaloneHelp(message)
-        ){
-
-            pendingStatus.set(
-                participantKey,
-                "Help"
-            );
-
-            return;
-
-        }
-
-
-
-        /* =================================================
-           STANDALONE TIME
-
-           time
-
-           No row.
-
-           Save pending Time.
-        ================================================= */
-
-        if(
-            !number &&
-            isStandaloneTime(message)
-        ){
-
-            pendingStatus.set(
-                participantKey,
-                "Time"
-            );
-
-            return;
-
-        }
-
-
-
-        /* =================================================
-           NUMBER FOUND
-        ================================================= */
-
-        if(number){
-
-            let status =
-                classifyStatus(message);
-
-
-            const numberOnly =
-                isNumberOnlyMessage(
-                    message,
-                    number
-                );
-
-
-
-            /* =============================================
-               NUMBER ONLY
-
-               If previous same-person message was
-               Help or Time, use that status.
-
-               Otherwise Others.
-            ============================================= */
-
-            if(numberOnly){
-
-                if(
-                    pendingStatus.has(
-                        participantKey
-                    )
-                ){
-
-                    status =
-                        pendingStatus.get(
-                            participantKey
-                        );
-
-                }
-                else{
-
-                    status =
-                        "Others";
-
-                }
-
-
-                /*
-                   Pending status consumed.
-                */
-
-                pendingStatus.delete(
-                    participantKey
-                );
-
-            }
-            else{
-
-                /*
-                   Example:
-
-                   help 9876543210
-                   time 9876543210
-
-                   classifyStatus() handles it.
-
-                   Old pending status is cleared.
-                */
-
-                pendingStatus.delete(
-                    participantKey
-                );
-
-            }
-
-
-
-            extracted.push({
-
-                date:
-                    record.date || "",
-
-                time:
-                    record.time || "",
-
-                participant:
-                    participant,
-
-                number:
-                    number,
-
-                status:
-                    status,
-
-                message:
-                    message,
-
-                fullDateTime:
-                    (record.date ? record.date + " " : "") +
-                    (record.time || "")
-
-            });
-
-
-            return;
-
-        }
-
-
-
-        /* =================================================
-           OTHER MESSAGE WITHOUT NUMBER
-
-           Example:
-
-           help
-           hello
-
-           Pending status should not remain.
-        ================================================= */
-
-        pendingStatus.delete(
-            participantKey
-        );
-
-    });
-
-
-
-    /* =====================================================
-       NO NUMBERS
-    ===================================================== */
-
-    if(extracted.length === 0){
-
-        finalData = [];
-
-        renderTable();
-
-        showMessage(
-            "File uploaded, but no 10-digit Indian mobile number was found. Please check the Zoom TXT format.",
-            true
-        );
-
-        return;
-
-    }
-
-
-
-    /* =====================================================
-       REMOVE DUPLICATES
-    ===================================================== */
-
-    finalData =
-        removeDuplicates(
-            extracted
-        );
-
-
-    sortData();
-
-    renderTable();
-
-
-
-    showMessage(
-        "File processed successfully. " +
-        extracted.length +
-        " number occurrence(s) found, " +
-        finalData.length +
-        " unique number(s) shown.",
-        false
-    );
+  box.style.display = "block";
 
 }
 
 
 
-/* =========================================================
-   DETECT ZOOM HEADER
-========================================================= */
+/* =========================
+   NORMALIZE PHONE
+========================= */
 
-function detectHeader(line){
+function normalizePhone(phone) {
 
-    if(!line){
+  let digits = String(phone || "").replace(/\D/g, "");
 
-        return null;
+  if (digits.length === 12 && digits.startsWith("91")) {
+    digits = digits.substring(2);
+  }
 
-    }
-
-
-    let clean =
-        line
-            .replace(/\uFEFF/g,"")
-            .trim();
-
-
-
-    /* =====================================================
-       FORMAT 1
-
-       2026-09-20 20:11:32 From Name to Everyone:
-    ===================================================== */
-
-    let match =
-        clean.match(
-            /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-        );
-
-
-    if(match){
-
-        return {
-
-            date:
-                match[1],
-
-            time:
-                match[2],
-
-            participant:
-                match[3].trim(),
-
-            recipient:
-                match[4].trim(),
-
-            message:
-                match[5].trim()
-
-        };
-
-    }
-
-
-
-    /* =====================================================
-       FORMAT 2
-
-       [20:11:32] From Name to Everyone:
-    ===================================================== */
-
-    match =
-        clean.match(
-            /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-        );
-
-
-    if(match){
-
-        return {
-
-            date:"",
-
-            time:
-                match[1],
-
-            participant:
-                match[2].trim(),
-
-            recipient:
-                match[3].trim(),
-
-            message:
-                match[4].trim()
-
-        };
-
-    }
-
-
-
-    /* =====================================================
-       FORMAT 3
-
-       From Name to Everyone:
-    ===================================================== */
-
-    match =
-        clean.match(
-            /^From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-        );
-
-
-    if(match){
-
-        return {
-
-            date:"",
-
-            time:"",
-
-            participant:
-                match[1].trim(),
-
-            recipient:
-                match[2].trim(),
-
-            message:
-                match[3].trim()
-
-        };
-
-    }
-
-
-
-    /* =====================================================
-       FORMAT 4
-
-       2026-09-20 20:11:32 - From Name to Everyone:
-    ===================================================== */
-
-    match =
-        clean.match(
-            /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-        );
-
-
-    if(match){
-
-        return {
-
-            date:
-                match[1],
-
-            time:
-                match[2],
-
-            participant:
-                match[3].trim(),
-
-            recipient:
-                match[4].trim(),
-
-            message:
-                match[5].trim()
-
-        };
-
-    }
-
-
-
-    /* =====================================================
-       FORMAT 5
-
-       20:11:32 - From Name to Everyone:
-    ===================================================== */
-
-    match =
-        clean.match(
-            /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-        );
-
-
-    if(match){
-
-        return {
-
-            date:"",
-
-            time:
-                match[1],
-
-            participant:
-                match[2].trim(),
-
-            recipient:
-                match[3].trim(),
-
-            message:
-                match[4].trim()
-
-        };
-
-    }
-
-
-    return null;
+  return digits;
 
 }
 
 
 
-/* =========================================================
-   PARSE CHAT
-========================================================= */
+/* =========================
+   EXTRACT PHONE
+========================= */
 
-function parseChat(text){
+function extractPhone(text) {
 
-    const lines =
-        text
-            .replace(/\r\n/g,"\n")
-            .replace(/\r/g,"\n")
-            .split("\n");
+  if (!text) return null;
 
+  let clean = text.replace(/\u00A0/g, " ");
 
-    const records = [];
+  /* +91 format */
+  let match = clean.match(
+    /(?:\+91|91)[\s\-]*(\d{5})[\s\-]*(\d{5})/
+  );
 
-    let current = null;
-
-
-
-    function saveCurrent(){
-
-        if(!current){
-
-            return;
-
-        }
+  if (match) {
+    return match[1] + match[2];
+  }
 
 
-        current.message =
-            normalizeMessage(
-                current.message
-            );
+  /* Normal 10 digit */
+  match = clean.match(
+    /(?<!\d)([6-9]\d{9})(?!\d)/
+  );
+
+  if (match) {
+    return match[1];
+  }
 
 
-        if(
-            current.participant ||
-            current.message
-        ){
+  /* Spaces / hyphens */
+  match = clean.match(
+    /(?<!\d)([6-9]\d{4})[\s\-]+(\d{5})(?!\d)/
+  );
 
-            records.push(
-                current
-            );
-
-        }
-
-    }
+  if (match) {
+    return match[1] + match[2];
+  }
 
 
+  /* Any digit groups which finally make 10 digits */
+  let digits = clean.replace(/\D/g, "");
 
-    for(
-        let i = 0;
-        i < lines.length;
-        i++
-    ){
+  if (
+    digits.length === 10 &&
+    /^[6-9]/.test(digits)
+  ) {
+    return digits;
+  }
 
-        let rawLine =
-            lines[i];
+  if (
+    digits.length === 12 &&
+    digits.startsWith("91") &&
+    /^[6-9]/.test(digits.substring(2))
+  ) {
+    return digits.substring(2);
+  }
 
-
-        rawLine =
-            rawLine.replace(
-                /^\uFEFF/,
-                ""
-            );
-
-
-        const header =
-            detectHeader(
-                rawLine
-            );
-
-
-        if(header){
-
-            saveCurrent();
-
-
-            current = {
-
-                date:
-                    header.date || "",
-
-                time:
-                    header.time || "",
-
-                participant:
-                    header.participant || "",
-
-                recipient:
-                    header.recipient || "",
-
-                message:
-                    header.message || ""
-
-            };
-
-
-            continue;
-
-        }
-
-
-
-        /*
-           Continuation line.
-        */
-
-        if(current){
-
-            const continuation =
-                rawLine.trim();
-
-
-            if(continuation){
-
-                if(current.message){
-
-                    current.message +=
-                        " " +
-                        continuation;
-
-                }
-                else{
-
-                    current.message =
-                        continuation;
-
-                }
-
-            }
-
-        }
-
-    }
-
-
-
-    saveCurrent();
-
-
-    return records;
+  return null;
 
 }
 
 
 
-/* =========================================================
-   NORMALIZE MESSAGE
-========================================================= */
-
-function normalizeMessage(message){
-
-    return String(message || "")
-        .replace(/\s+/g," ")
-        .trim();
-
-}
-
-
-
-/* =========================================================
-   CLEAN PARTICIPANT
-========================================================= */
-
-function cleanParticipant(name){
-
-    let value =
-        String(name || "")
-            .replace(/\s+/g," ")
-            .trim();
-
-
-    value =
-        value.replace(
-            /^From\s+/i,
-            ""
-        );
-
-
-    return value;
-
-}
-
-
-
-/* =========================================================
-   GET PHONE NUMBER
-========================================================= */
-
-function getNumber(text){
-
-    if(!text){
-
-        return null;
-
-    }
-
-
-    let value =
-        String(text);
-
-
-    value =
-        value.replace(
-            /\u00A0/g,
-            " "
-        );
-
-
-
-    /* =====================================================
-       +91 / 91 FORMAT
-    ===================================================== */
-
-    let match =
-        value.match(
-            /(?:\+?\s*91)[\s-]*([6-9]\d{4})[\s-]?(\d{5})\b/
-        );
-
-
-    if(match){
-
-        return (
-            match[1] +
-            match[2]
-        );
-
-    }
-
-
-
-    /* =====================================================
-       99446 17313
-    ===================================================== */
-
-    match =
-        value.match(
-            /\b([6-9]\d{4})[\s-](\d{5})\b/
-        );
-
-
-    if(match){
-
-        return (
-            match[1] +
-            match[2]
-        );
-
-    }
-
-
-
-    /* =====================================================
-       99446-17313
-    ===================================================== */
-
-    match =
-        value.match(
-            /\b([6-9]\d{4})-(\d{5})\b/
-        );
-
-
-    if(match){
-
-        return (
-            match[1] +
-            match[2]
-        );
-
-    }
-
-
-
-    /* =====================================================
-       NORMAL 10 DIGIT NUMBER
-    ===================================================== */
-
-    match =
-        value.match(
-            /\b([6-9]\d{9})\b/
-        );
-
-
-    if(match){
-
-        return match[1];
-
-    }
-
-
-
-    /* =====================================================
-       FALLBACK DIGIT GROUPS
-    ===================================================== */
-
-    const digitGroups =
-        value.match(
-            /\d[\d\s-]{7,}\d/g
-        );
-
-
-    if(digitGroups){
-
-        for(
-            const group of digitGroups
-        ){
-
-            const digits =
-                group.replace(
-                    /\D/g,
-                    ""
-                );
-
-
-            const index =
-                digits.search(
-                    /[6-9]\d{9}/
-                );
-
-
-            if(index !== -1){
-
-                return digits.substring(
-                    index,
-                    index + 10
-                );
-
-            }
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-
-/* =========================================================
+/* =========================
    STANDALONE HELP
-========================================================= */
+========================= */
 
-function isStandaloneHelp(message){
+function isStandaloneHelp(message) {
 
-    const text =
-        String(message || "")
-            .trim()
-            .toLowerCase();
-
-
-    return (
-        text === "help"
-    );
+  return (
+    String(message || "")
+      .trim()
+      .toLowerCase() === "help"
+  );
 
 }
 
 
 
-/* =========================================================
+/* =========================
    STANDALONE TIME
-========================================================= */
+========================= */
 
-function isStandaloneTime(message){
+function isStandaloneTime(message) {
 
-    const text =
-        String(message || "")
-            .trim()
-            .toLowerCase();
-
-
-    return (
-        text === "time"
-    );
+  return (
+    String(message || "")
+      .trim()
+      .toLowerCase() === "time"
+  );
 
 }
 
 
 
-/* =========================================================
-   NUMBER ONLY CHECK
-========================================================= */
+/* =========================
+   NUMBER ONLY MESSAGE
+========================= */
 
-function isNumberOnlyMessage(
-    text,
-    number
-){
+function isNumberOnlyMessage(text, number) {
 
-    if(
-        !text ||
-        !number
-    ){
+  if (!text || !number) return false;
 
-        return false;
+  let normalizedText = normalizePhone(text);
 
-    }
-
-
-    let value =
-        String(text)
-            .replace(
-                /\u00A0/g,
-                " "
-            )
-            .trim();
-
-
-    /*
-       Remove +91.
-    */
-
-    value =
-        value.replace(
-            /^\+?\s*91[\s-]*/,
-            ""
-        );
-
-
-    /*
-       Remove spaces and hyphens.
-    */
-
-    value =
-        value.replace(
-            /[\s-]/g,
-            ""
-        );
-
-
-    return (
-        value === number
-    );
+  return normalizedText === number;
 
 }
 
 
 
-/* =========================================================
-   TIME MESSAGE CHECK
-========================================================= */
+/* =========================
+   STATUS FROM SAME MESSAGE
+========================= */
 
-function isTimeMessage(message){
+function classifyStatus(message) {
 
-    const text =
-        String(message || "")
-            .toLowerCase();
+  const msg = String(message || "")
+    .trim()
+    .toLowerCase();
 
 
-    return (
+  /* Help */
+  if (
+    /\bhelp\b/i.test(msg)
+  ) {
+    return "Help";
+  }
 
-        /\btime\b/i.test(text) ||
 
-        /\bwhen\b/i.test(text) ||
+  /* Time */
+  if (
+    /\btime\b/i.test(msg) ||
+    /\bwhen\b/i.test(msg) ||
+    /\bdelay\b/i.test(msg) ||
+    /\blate\b/i.test(msg)
+  ) {
+    return "Time";
+  }
 
-        /\bwhat\s*time\b/i.test(text) ||
 
-        /\btiming\b/i.test(text) ||
-
-        /\bclock\b/i.test(text) ||
-
-        /\bhour\b/i.test(text) ||
-
-        /\bhours\b/i.test(text) ||
-
-        /\bminute\b/i.test(text) ||
-
-        /\bminutes\b/i.test(text) ||
-
-        /\bclass\s*start\b/i.test(text) ||
-
-        /\bstart\s*time\b/i.test(text) ||
-
-        /\bschedule\b/i.test(text) ||
-
-        /நேரம்/i.test(text) ||
-
-        /மணி/i.test(text)
-
-    );
+  return "Others";
 
 }
 
 
 
-/* =========================================================
-   STATUS CLASSIFICATION
-========================================================= */
+/* =========================
+   PARSE ZOOM HEADER
+========================= */
 
-function classifyStatus(message){
+function parseZoomHeader(line) {
 
-    const text =
-        String(message || "")
-            .toLowerCase();
-
-
-    /*
-       HELP
-
-       ONLY "help" is used.
-
-       support / assist / doubt etc.
-       are NOT automatically Help.
-    */
-
-    if(
-        /\bhelp\b/i.test(text)
-    ){
-
-        return "Help";
-
-    }
+  let participant = "";
+  let chatTime = "";
 
 
+  /* 
+     Example:
+     17:46:02 From Dr. Prabhakar Raj to Everyone:
+  */
 
-    /*
-       TIME
-    */
+  let match = line.match(
+    /^(\d{1,2}:\d{2}:\d{2})\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
+  );
 
-    if(
-        /\btime\b/i.test(text) ||
-        /\bwhen\b/i.test(text) ||
-        /\bwhat\s*time\b/i.test(text) ||
-        /\btiming\b/i.test(text) ||
-        /\bclock\b/i.test(text) ||
-        /\bhour\b/i.test(text) ||
-        /\bhours\b/i.test(text) ||
-        /\bminute\b/i.test(text) ||
-        /\bminutes\b/i.test(text) ||
-        /\bclass\s*start\b/i.test(text) ||
-        /\bstart\s*time\b/i.test(text) ||
-        /\bschedule\b/i.test(text) ||
-        /நேரம்/i.test(text) ||
-        /மணி/i.test(text)
-    ){
+  if (match) {
 
-        return "Time";
+    chatTime = match[1];
 
-    }
+    participant = match[2].trim();
+
+    return {
+      participant,
+      chatTime
+    };
+
+  }
 
 
-    return "Others";
+  /*
+     Example:
+     [17:46:02] From Name to Everyone:
+  */
+
+  match = line.match(
+    /^\[?(\d{1,2}:\d{2}:\d{2})\]?\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
+  );
+
+  if (match) {
+
+    chatTime = match[1];
+
+    participant = match[2].trim();
+
+    return {
+      participant,
+      chatTime
+    };
+
+  }
+
+
+  /*
+     Example:
+     2026-09-20 17:46:02 From Name to Everyone:
+  */
+
+  match = line.match(
+    /^\d{4}-\d{1,2}-\d{1,2}\s+(\d{1,2}:\d{2}:\d{2})\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
+  );
+
+  if (match) {
+
+    chatTime = match[1];
+
+    participant = match[2].trim();
+
+    return {
+      participant,
+      chatTime
+    };
+
+  }
+
+
+  /*
+     Example:
+     17:46:02 - From Name to Everyone:
+  */
+
+  match = line.match(
+    /^(\d{1,2}:\d{2}:\d{2})\s*-\s*From\s+(.+?)\s+to\s+.+?:\s*$/i
+  );
+
+  if (match) {
+
+    chatTime = match[1];
+
+    participant = match[2].trim();
+
+    return {
+      participant,
+      chatTime
+    };
+
+  }
+
+
+  return null;
 
 }
 
 
 
-/* =========================================================
-   REMOVE DUPLICATES
-========================================================= */
+/* =========================
+   PROCESS FILE
+========================= */
 
-function removeDuplicates(data){
+function processFile(text) {
 
-    const map =
-        new Map();
-
-
-    data.forEach(function(item){
-
-        const key =
-            item.number;
+  extractedRows = [];
 
 
-        if(!map.has(key)){
-
-            map.set(
-                key,
-                item
-            );
-
-            return;
-
-        }
+  const lines = String(text || "")
+    .replace(/\r/g, "")
+    .split("\n");
 
 
-        const old =
-            map.get(key);
+  let currentParticipant = "";
 
+  let currentTime = "";
+
+  let currentMessage = "";
+
+
+  /*
+     Pending status is stored PER PARTICIPANT.
+
+     Example:
+
+     Person A
+     help
+
+     Person B
+     hello
+
+     Person A
+     9883726578
+
+     => Person A number = Help
+  */
+
+  const pendingStatus = new Map();
+
+
+  function processCurrentMessage() {
+
+    if (!currentParticipant) return;
+
+
+    const message = currentMessage
+      .trim();
+
+
+    if (!message) return;
+
+
+    const number = extractPhone(message);
+
+
+    /*
+       CASE 1:
+       Same message contains number
+
+       help 9876543210
+       time 9876543210
+    */
+
+    if (number) {
+
+      let status = "Others";
+
+
+      if (
+        /\bhelp\b/i.test(message)
+      ) {
+
+        status = "Help";
+
+      }
+      else if (
+        /\btime\b/i.test(message) ||
+        /\bwhen\b/i.test(message) ||
+        /\bdelay\b/i.test(message) ||
+        /\blate\b/i.test(message)
+      ) {
+
+        status = "Time";
+
+      }
+      else if (
+        isNumberOnlyMessage(message, number)
+      ) {
 
         /*
-           Priority:
+           CASE 2:
+           Number only.
 
-           Help = 1
-           Time = 2
-           Others = 3
+           Check pending status
+           of SAME participant.
         */
 
-        const priority = {
+        if (
+          pendingStatus.has(currentParticipant)
+        ) {
 
-            "Help":1,
+          status =
+            pendingStatus.get(currentParticipant);
 
-            "Time":2,
-
-            "Others":3
-
-        };
-
-
-        const oldPriority =
-            priority[old.status] || 3;
-
-
-        const newPriority =
-            priority[item.status] || 3;
-
-
-        /*
-           Better category wins.
-        */
-
-        if(
-            newPriority <
-            oldPriority
-        ){
-
-            map.set(
-                key,
-                item
-            );
-
-            return;
+          pendingStatus.delete(
+            currentParticipant
+          );
 
         }
 
-
-        /*
-           Same category:
-           latest message wins.
-        */
-
-        if(
-            newPriority ===
-            oldPriority
-        ){
-
-            const oldTime =
-                getDateTimeValue(
-                    old
-                );
+      }
 
 
-            const newTime =
-                getDateTimeValue(
-                    item
-                );
+      extractedRows.push({
+
+        time: currentTime,
+
+        name: currentParticipant,
+
+        number: number,
+
+        status: status
+
+      });
 
 
-            if(
-                newTime >= oldTime
-            ){
-
-                map.set(
-                    key,
-                    item
-                );
-
-            }
-
-        }
-
-    });
-
-
-    return Array.from(
-        map.values()
-    );
-
-}
-
-
-
-/* =========================================================
-   DATE TIME VALUE
-========================================================= */
-
-function getDateTimeValue(item){
-
-    let datePart =
-        item.date ||
-        "1970-01-01";
-
-
-    const value =
-        (
-            datePart +
-            " " +
-            (
-                item.time ||
-                "00:00:00"
-            )
-        ).trim();
-
-
-    const parsed =
-        new Date(value);
-
-
-    if(
-        !isNaN(
-            parsed.getTime()
-        )
-    ){
-
-        return parsed.getTime();
+      return;
 
     }
 
 
-    const match =
-        String(
-            item.time || ""
-        ).match(
-            /(\d{1,2}):(\d{2})(?::(\d{2}))?/
-        );
+    /*
+       Standalone HELP
 
+       Store only for SAME participant.
+       Do NOT create a row.
+    */
 
-    if(match){
+    if (isStandaloneHelp(message)) {
 
-        return (
-            Number(match[1]) * 3600 +
-            Number(match[2]) * 60 +
-            Number(match[3] || 0)
-        );
+      pendingStatus.set(
+        currentParticipant,
+        "Help"
+      );
 
-    }
-
-
-    return 0;
-
-}
-
-
-
-/* =========================================================
-   SORT DATA
-========================================================= */
-
-function sortData(){
-
-    finalData.sort(
-        function(a,b){
-
-            return (
-                getDateTimeValue(a) -
-                getDateTimeValue(b)
-            );
-
-        }
-    );
-
-}
-
-
-
-/* =========================================================
-   RENDER TABLE
-========================================================= */
-
-function renderTable(){
-
-    const tbody =
-        document.getElementById(
-            "resultBody"
-        );
-
-
-    tbody.innerHTML = "";
-
-
-    if(!finalData.length){
-
-        tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="5"
-                    class="empty"
-                >
-                    Upload a Zoom TXT file to see results
-                </td>
-
-            </tr>
-
-        `;
-
-
-        updateStats();
-
-        return;
+      return;
 
     }
 
 
+    /*
+       Standalone TIME
 
-    finalData.forEach(
-        function(item,index){
+       Store only for SAME participant.
+       Do NOT create a row.
+    */
 
-            const row =
-                document.createElement(
-                    "tr"
-                );
+    if (isStandaloneTime(message)) {
 
+      pendingStatus.set(
+        currentParticipant,
+        "Time"
+      );
 
-            let statusClass =
-                "status-others";
-
-
-            if(
-                item.status === "Help"
-            ){
-
-                statusClass =
-                    "status-help";
-
-            }
-            else if(
-                item.status === "Time"
-            ){
-
-                statusClass =
-                    "status-time";
-
-            }
-
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${index + 1}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        formatDateTime(item)
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        item.participant
-                    )}
-                </td>
-
-                <td class="number">
-                    ${escapeHTML(
-                        item.number
-                    )}
-                </td>
-
-                <td>
-
-                    <span
-                        class="status ${statusClass}"
-                    >
-                        ${escapeHTML(
-                            item.status
-                        )}
-                    </span>
-
-                </td>
-
-            `;
-
-
-            tbody.appendChild(
-                row
-            );
-
-        }
-    );
-
-
-    updateStats();
-
-}
-
-
-
-/* =========================================================
-   FORMAT DATE TIME
-========================================================= */
-
-function formatDateTime(item){
-
-    if(
-        item.date &&
-        item.time
-    ){
-
-        return (
-            item.date +
-            " " +
-            item.time
-        );
+      return;
 
     }
 
 
-    return item.time || "";
+    /*
+       Any unrelated message from same person
+       clears pending Help / Time.
+    */
 
-}
+    pendingStatus.delete(
+      currentParticipant
+    );
 
-
-
-/* =========================================================
-   UPDATE STATS
-========================================================= */
-
-function updateStats(){
-
-    const help =
-        finalData.filter(
-            x =>
-                x.status === "Help"
-        ).length;
-
-
-    const time =
-        finalData.filter(
-            x =>
-                x.status === "Time"
-        ).length;
-
-
-    const others =
-        finalData.filter(
-            x =>
-                x.status === "Others"
-        ).length;
+  }
 
 
 
-    document.getElementById(
-        "uniqueCount"
-    ).textContent =
-        finalData.length;
+  for (let i = 0; i < lines.length; i++) {
+
+    const line = lines[i];
 
 
-    document.getElementById(
-        "helpCount"
-    ).textContent =
-        help;
+    const header = parseZoomHeader(line);
 
 
-    document.getElementById(
-        "timeCount"
-    ).textContent =
-        time;
+    if (header) {
+
+      /*
+         Finish previous message
+      */
+
+      processCurrentMessage();
 
 
-    document.getElementById(
-        "othersCount"
-    ).textContent =
-        others;
+      /*
+         Start new message
+      */
+
+      currentParticipant =
+        header.participant;
+
+      currentTime =
+        header.chatTime;
+
+      currentMessage = "";
 
 
-    document.getElementById(
-        "numberCount"
-    ).textContent =
-        finalData.length;
-
-}
-
-
-
-/* =========================================================
-   DOWNLOAD CSV
-========================================================= */
-
-function downloadCSV(){
-
-    if(!finalData.length){
-
-        showMessage(
-            "Please upload a Zoom TXT file first.",
-            true
-        );
-
-        return;
+      continue;
 
     }
 
 
-    const headers = [
+    /*
+       Message body
 
-        "S.No",
+       Zoom usually places message
+       after a TAB.
+    */
 
-        "Chat Date",
+    if (
+      line.trim() !== ""
+    ) {
 
-        "Chat Time",
+      if (currentMessage) {
 
-        "Participant Name",
+        currentMessage += " ";
 
-        "Phone Number",
+      }
 
-        "Status",
+      currentMessage +=
+        line.trim();
 
-        "Message"
+    }
 
-    ];
-
-
-    const rows =
-        [headers];
-
-
-    finalData.forEach(
-        function(item,index){
-
-            rows.push([
-
-                index + 1,
-
-                item.date,
-
-                item.time,
-
-                item.participant,
-
-                item.number,
-
-                item.status,
-
-                item.message
-
-            ]);
-
-        }
-    );
+  }
 
 
-    const csv =
-        rows
-            .map(
-                row =>
-                    row
-                        .map(csvEscape)
-                        .join(",")
-            )
-            .join("\r\n");
+  /*
+     Process final message
+  */
+
+  processCurrentMessage();
 
 
-    const blob =
-        new Blob(
-            [
-                "\uFEFF" +
-                csv
-            ],
-            {
-                type:
-                    "text/csv;charset=utf-8;"
-            }
+  /*
+     Remove duplicate numbers.
+
+     Priority:
+       Help = 1
+       Time = 2
+       Others = 3
+  */
+
+  const priority = {
+    Help: 1,
+    Time: 2,
+    Others: 3
+  };
+
+
+  const uniqueMap = new Map();
+
+
+  extractedRows.forEach(row => {
+
+    const key = row.number;
+
+
+    if (!uniqueMap.has(key)) {
+
+      uniqueMap.set(
+        key,
+        row
+      );
+
+    }
+    else {
+
+      const existing =
+        uniqueMap.get(key);
+
+
+      if (
+        priority[row.status] <
+        priority[existing.status]
+      ) {
+
+        uniqueMap.set(
+          key,
+          row
         );
 
+      }
 
-    const url =
-        URL.createObjectURL(
-            blob
-        );
+    }
 
-
-    const link =
-        document.createElement(
-            "a"
-        );
+  });
 
 
-    link.href =
-        url;
+  extractedRows =
+    Array.from(uniqueMap.values());
 
 
-    link.download =
-        "zoom_chat_extracted.csv";
+  renderTable();
 
 
-    document.body.appendChild(
-        link
-    );
+  updateStats();
 
 
-    link.click();
-
-
-    document.body.removeChild(
-        link
-    );
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-
-/* =========================================================
-   CSV ESCAPE
-========================================================= */
-
-function csvEscape(value){
-
-    const text =
-        String(
-            value ?? ""
-        );
-
-
-    return (
-        '"' +
-        text.replace(
-            /"/g,
-            '""'
-        ) +
-        '"'
-    );
-
-}
-
-
-
-/* =========================================================
-   CLEAR DATA
-========================================================= */
-
-function clearData(){
-
-    finalData = [];
-
-
-    document.getElementById(
-        "fileInput"
-    ).value = "";
-
-
-    renderTable();
-
+  if (extractedRows.length > 0) {
 
     showMessage(
-        "",
-        false
+      "File processed successfully. " +
+      extractedRows.length +
+      " unique phone number(s) found.",
+      "success"
     );
 
-}
+  }
+  else {
 
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    message,
-    isError
-){
-
-    const box =
-        document.getElementById(
-            "messageBox"
-        );
-
-
-    if(!message){
-
-        box.style.display =
-            "none";
-
-        box.textContent =
-            "";
-
-        return;
-
-    }
-
-
-    box.style.display =
-        "block";
-
-
-    box.textContent =
-        message;
-
-
-    if(isError){
-
-        box.style.background =
-            "#fef2f2";
-
-        box.style.color =
-            "#991b1b";
-
-    }
-    else{
-
-        box.style.background =
-            "#eff6ff";
-
-        box.style.color =
-            "#1e40af";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHTML(value){
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
+    showMessage(
+      "File uploaded, but no 10-digit phone number was found. Please check the Zoom TXT format.",
+      "error"
     );
 
+  }
+
 }
 
 
 
-/* =========================================================
-   INITIAL
-========================================================= */
+/* =========================
+   RENDER TABLE
+========================= */
 
-updateStats();
+function renderTable() {
+
+  const body =
+    document.getElementById("resultBody");
+
+
+  body.innerHTML = "";
+
+
+  extractedRows.forEach(
+    (row, index) => {
+
+      const tr =
+        document.createElement("tr");
+
+
+      let statusClass =
+        "status-others";
+
+
+      if (row.status === "Help") {
+
+        statusClass =
+          "status-help";
+
+      }
+      else if (row.status === "Time") {
+
+        statusClass =
+          "status-time";
+
+      }
+
+
+      tr.innerHTML = `
+
+        <td>${index + 1}</td>
+
+        <td>${escapeHtml(row.time)}</td>
+
+        <td>${escapeHtml(row.name)}</td>
+
+        <td>${escapeHtml(row.number)}</td>
+
+        <td>
+          <span class="status ${statusClass}">
+            ${escapeHtml(row.status)}
+          </span>
+        </td>
+
+      `;
+
+
+      body.appendChild(tr);
+
+    }
+  );
+
+}
+
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+
+/* =========================
+   UPDATE STATS
+========================= */
+
+function updateStats() {
+
+  const help =
+    extractedRows.filter(
+      r => r.status === "Help"
+    ).length;
+
+
+  const time =
+    extractedRows.filter(
+      r => r.status === "Time"
+    ).length;
+
+
+  const others =
+    extractedRows.filter(
+      r => r.status === "Others"
+    ).length;
+
+
+  document.getElementById(
+    "uniqueCount"
+  ).textContent =
+    extractedRows.length;
+
+
+  document.getElementById(
+    "helpCount"
+  ).textContent =
+    help;
+
+
+  document.getElementById(
+    "timeCount"
+  ).textContent =
+    time;
+
+
+  document.getElementById(
+    "othersCount"
+  ).textContent =
+    others;
+
+
+  document.getElementById(
+    "numberCount"
+  ).textContent =
+    extractedRows.length;
+
+}
+
+
+
+/* =========================
+   DOWNLOAD CSV
+========================= */
+
+function downloadCSV() {
+
+  if (extractedRows.length === 0) {
+
+    alert(
+      "No data available to download."
+    );
+
+    return;
+
+  }
+
+
+  let csv =
+    "S.No,Chat Time,Participant Name,Extracted Number,Status\n";
+
+
+  extractedRows.forEach(
+    (row, index) => {
+
+      csv +=
+        `${index + 1},` +
+        `"${escapeCSV(row.time)}",` +
+        `"${escapeCSV(row.name)}",` +
+        `"${escapeCSV(row.number)}",` +
+        `"${escapeCSV(row.status)}"\n`;
+
+    }
+  );
+
+
+  const blob =
+    new Blob(
+      ["\uFEFF" + csv],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(blob);
+
+
+  const a =
+    document.createElement("a");
+
+
+  a.href = url;
+
+  a.download =
+    "zoom_chat_extracted.csv";
+
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  document.body.removeChild(a);
+
+
+  URL.revokeObjectURL(url);
+
+}
+
+
+
+/* =========================
+   ESCAPE CSV
+========================= */
+
+function escapeCSV(value) {
+
+  return String(value || "")
+    .replace(/"/g, '""');
+
+}
+
+
+
+/* =========================
+   CLEAR
+========================= */
+
+function clearData() {
+
+  extractedRows = [];
+
+
+  document.getElementById(
+    "resultBody"
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    "fileInput"
+  ).value = "";
+
+
+  document.getElementById(
+    "uniqueCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "helpCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "timeCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "othersCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "numberCount"
+  ).textContent = "0";
+
+
+  document.getElementById(
+    "message"
+  ).style.display = "none";
+
+}
 
 </script>
 
-
 </body>
-
 </html>
-```
