@@ -1,6 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +14,7 @@
 <link rel="shortcut icon" href="./favicon.ico?v=10" type="image/x-icon">
 
 <style>
+
 *{
     box-sizing:border-box;
 }
@@ -218,12 +222,15 @@ tbody tr:hover{
 }
 
 @media(max-width:900px){
+
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
+
 }
 
 @media(max-width:600px){
+
     .header{
         padding:15px;
     }
@@ -244,6 +251,7 @@ tbody tr:hover{
     .stats{
         grid-template-columns:1fr;
     }
+
 }
 
 @media print{
@@ -283,11 +291,16 @@ tbody tr:hover{
         font-size:11px;
         padding:7px;
     }
+
 }
+
 </style>
+
 </head>
 
+
 <body>
+
 
 <div class="header">
 
@@ -303,6 +316,7 @@ tbody tr:hover{
 
 
 <div class="container">
+
 
     <div class="upload-box">
 
@@ -354,45 +368,86 @@ tbody tr:hover{
 
     <div class="stats">
 
+
         <div class="stat">
-            <div class="stat-title">Unique Rows</div>
+
+            <div class="stat-title">
+                Unique Rows
+            </div>
+
             <div
                 class="stat-number"
                 id="uniqueCount"
-            >0</div>
+            >
+                0
+            </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-title">Help</div>
+
+            <div class="stat-title">
+                Help
+            </div>
+
             <div
                 class="stat-number"
                 id="helpCount"
-            >0</div>
+            >
+                0
+            </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-title">Time</div>
+
+            <div class="stat-title">
+                Time
+            </div>
+
             <div
                 class="stat-number"
                 id="timeCount"
-            >0</div>
+            >
+                0
+            </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-title">Others</div>
+
+            <div class="stat-title">
+                Others
+            </div>
+
             <div
                 class="stat-number"
                 id="othersCount"
-            >0</div>
+            >
+                0
+            </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-title">Numbers</div>
+
+            <div class="stat-title">
+                Numbers
+            </div>
+
             <div
                 class="stat-number"
                 id="numberCount"
-            >0</div>
+            >
+                0
+            </div>
+
         </div>
+
 
     </div>
 
@@ -406,24 +461,33 @@ tbody tr:hover{
                 <thead>
 
                     <tr>
+
                         <th>S.No</th>
+
                         <th>Chat Time</th>
+
                         <th>Participant Name</th>
+
                         <th>Extracted Number</th>
+
                         <th>Status</th>
+
                     </tr>
 
                 </thead>
 
+
                 <tbody id="resultBody">
 
                     <tr>
+
                         <td
                             colspan="5"
                             class="empty"
                         >
                             Upload a Zoom TXT file to see results
                         </td>
+
                     </tr>
 
                 </tbody>
@@ -434,12 +498,19 @@ tbody tr:hover{
 
     </div>
 
+
 </div>
 
 
 <script>
 
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
 let finalData = [];
+
 
 
 /* =========================================================
@@ -450,11 +521,16 @@ document
 .getElementById("fileInput")
 .addEventListener("change", function(event){
 
-    const file = event.target.files[0];
+    const file =
+        event.target.files[0];
+
 
     if(!file){
+
         return;
+
     }
+
 
     if(
         !file.name.toLowerCase().endsWith(".txt") &&
@@ -467,47 +543,54 @@ document
         );
 
         return;
+
     }
 
 
-    const reader = new FileReader();
+    const reader =
+        new FileReader();
 
 
-    reader.onload = function(e){
+    reader.onload =
+        function(e){
 
-        try{
+            try{
 
-            const text = e.target.result;
+                const text =
+                    e.target.result;
 
-            processFile(text);
+                processFile(text);
 
-        }catch(error){
+            }
+            catch(error){
 
-            console.error(error);
+                console.error(error);
+
+                showMessage(
+                    "Error reading the file. Please check the TXT file.",
+                    true
+                );
+
+            }
+
+        };
+
+
+    reader.onerror =
+        function(){
 
             showMessage(
-                "Error reading the file. Please check the TXT file.",
+                "Unable to read this file.",
                 true
             );
 
-        }
-
-    };
-
-
-    reader.onerror = function(){
-
-        showMessage(
-            "Unable to read this file.",
-            true
-        );
-
-    };
+        };
 
 
     reader.readAsText(file);
 
 });
+
 
 
 /* =========================================================
@@ -524,10 +607,12 @@ function processFile(text){
         );
 
         return;
+
     }
 
 
-    const records = parseChat(text);
+    const records =
+        parseChat(text);
 
 
     if(records.length === 0){
@@ -538,37 +623,227 @@ function processFile(text){
         );
 
         return;
+
     }
 
 
     const extracted = [];
 
 
-    records.forEach(record => {
+    /*
+       =====================================================
+       PENDING STATUS
 
-        const number = getNumber(record.message);
+       Example:
 
+       Kumar -> help
+       Kumar -> 9876543210
+
+       Result:
+       9876543210 = Help
+
+
+       Ravi -> time
+       Ravi -> 9876543211
+
+       Result:
+       9876543211 = Time
+       =====================================================
+    */
+
+    const pendingStatus =
+        new Map();
+
+
+
+    records.forEach(function(record){
+
+        const participant =
+            cleanParticipant(
+                record.participant
+            );
+
+
+        const participantKey =
+            participant
+                .toLowerCase()
+                .replace(/\s+/g," ")
+                .trim();
+
+
+        const message =
+            normalizeMessage(
+                record.message
+            );
+
+
+        const number =
+            getNumber(message);
+
+
+
+        /* =================================================
+           EMPTY MESSAGE
+        ================================================= */
+
+        if(!message){
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+           STANDALONE HELP
+
+           help
+
+           No row.
+
+           Save pending Help.
+        ================================================= */
+
+        if(
+            !number &&
+            isStandaloneHelp(message)
+        ){
+
+            pendingStatus.set(
+                participantKey,
+                "Help"
+            );
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+           STANDALONE TIME
+
+           time
+
+           No row.
+
+           Save pending Time.
+        ================================================= */
+
+        if(
+            !number &&
+            isStandaloneTime(message)
+        ){
+
+            pendingStatus.set(
+                participantKey,
+                "Time"
+            );
+
+            return;
+
+        }
+
+
+
+        /* =================================================
+           NUMBER FOUND
+        ================================================= */
 
         if(number){
 
-            const status = classifyStatus(record.message);
+            let status =
+                classifyStatus(message);
+
+
+            const numberOnly =
+                isNumberOnlyMessage(
+                    message,
+                    number
+                );
+
+
+
+            /* =============================================
+               NUMBER ONLY
+
+               If previous same-person message was
+               Help or Time, use that status.
+
+               Otherwise Others.
+            ============================================= */
+
+            if(numberOnly){
+
+                if(
+                    pendingStatus.has(
+                        participantKey
+                    )
+                ){
+
+                    status =
+                        pendingStatus.get(
+                            participantKey
+                        );
+
+                }
+                else{
+
+                    status =
+                        "Others";
+
+                }
+
+
+                /*
+                   Pending status consumed.
+                */
+
+                pendingStatus.delete(
+                    participantKey
+                );
+
+            }
+            else{
+
+                /*
+                   Example:
+
+                   help 9876543210
+                   time 9876543210
+
+                   classifyStatus() handles it.
+
+                   Old pending status is cleared.
+                */
+
+                pendingStatus.delete(
+                    participantKey
+                );
+
+            }
+
 
 
             extracted.push({
 
-                date: record.date || "",
+                date:
+                    record.date || "",
 
-                time: record.time || "",
+                time:
+                    record.time || "",
 
-                participant: cleanParticipant(
-                    record.participant
-                ),
+                participant:
+                    participant,
 
-                number: number,
+                number:
+                    number,
 
-                status: status,
+                status:
+                    status,
 
-                message: record.message,
+                message:
+                    message,
 
                 fullDateTime:
                     (record.date ? record.date + " " : "") +
@@ -576,10 +851,35 @@ function processFile(text){
 
             });
 
+
+            return;
+
         }
+
+
+
+        /* =================================================
+           OTHER MESSAGE WITHOUT NUMBER
+
+           Example:
+
+           help
+           hello
+
+           Pending status should not remain.
+        ================================================= */
+
+        pendingStatus.delete(
+            participantKey
+        );
 
     });
 
+
+
+    /* =====================================================
+       NO NUMBERS
+    ===================================================== */
 
     if(extracted.length === 0){
 
@@ -593,16 +893,25 @@ function processFile(text){
         );
 
         return;
+
     }
 
 
-    finalData = removeDuplicates(extracted);
+
+    /* =====================================================
+       REMOVE DUPLICATES
+    ===================================================== */
+
+    finalData =
+        removeDuplicates(
+            extracted
+        );
 
 
     sortData();
 
-
     renderTable();
+
 
 
     showMessage(
@@ -617,6 +926,7 @@ function processFile(text){
 }
 
 
+
 /* =========================================================
    DETECT ZOOM HEADER
 ========================================================= */
@@ -624,54 +934,66 @@ function processFile(text){
 function detectHeader(line){
 
     if(!line){
+
         return null;
+
     }
 
 
-    let clean = line
-        .replace(/\uFEFF/g, "")
-        .trim();
+    let clean =
+        line
+            .replace(/\uFEFF/g,"")
+            .trim();
 
 
-    /*
-        FORMAT 1
 
-        2026-09-20 20:11:32 From Nehru Nithi to Hosts and panelists:
-    */
+    /* =====================================================
+       FORMAT 1
 
-    let match = clean.match(
-        /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-    );
+       2026-09-20 20:11:32 From Name to Everyone:
+    ===================================================== */
+
+    let match =
+        clean.match(
+            /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
+        );
 
 
     if(match){
 
         return {
 
-            date:match[1],
+            date:
+                match[1],
 
-            time:match[2],
+            time:
+                match[2],
 
-            participant:match[3].trim(),
+            participant:
+                match[3].trim(),
 
-            recipient:match[4].trim(),
+            recipient:
+                match[4].trim(),
 
-            message:match[5].trim()
+            message:
+                match[5].trim()
 
         };
 
     }
 
 
-    /*
-        FORMAT 2
 
-        [20:11:32] From Name to Everyone:
-    */
+    /* =====================================================
+       FORMAT 2
 
-    match = clean.match(
-        /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-    );
+       [20:11:32] From Name to Everyone:
+    ===================================================== */
+
+    match =
+        clean.match(
+            /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s+From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
+        );
 
 
     if(match){
@@ -680,28 +1002,34 @@ function detectHeader(line){
 
             date:"",
 
-            time:match[1],
+            time:
+                match[1],
 
-            participant:match[2].trim(),
+            participant:
+                match[2].trim(),
 
-            recipient:match[3].trim(),
+            recipient:
+                match[3].trim(),
 
-            message:match[4].trim()
+            message:
+                match[4].trim()
 
         };
 
     }
 
 
-    /*
-        FORMAT 3
 
-        From Name to Everyone:
-    */
+    /* =====================================================
+       FORMAT 3
 
-    match = clean.match(
-        /^From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-    );
+       From Name to Everyone:
+    ===================================================== */
+
+    match =
+        clean.match(
+            /^From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
+        );
 
 
     if(match){
@@ -712,56 +1040,68 @@ function detectHeader(line){
 
             time:"",
 
-            participant:match[1].trim(),
+            participant:
+                match[1].trim(),
 
-            recipient:match[2].trim(),
+            recipient:
+                match[2].trim(),
 
-            message:match[3].trim()
+            message:
+                match[3].trim()
 
         };
 
     }
 
 
-    /*
-        FORMAT 4
 
-        2026-09-20 20:11:32 - From Name to Everyone:
-    */
+    /* =====================================================
+       FORMAT 4
 
-    match = clean.match(
-        /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-    );
+       2026-09-20 20:11:32 - From Name to Everyone:
+    ===================================================== */
+
+    match =
+        clean.match(
+            /^\[?\s*(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
+        );
 
 
     if(match){
 
         return {
 
-            date:match[1],
+            date:
+                match[1],
 
-            time:match[2],
+            time:
+                match[2],
 
-            participant:match[3].trim(),
+            participant:
+                match[3].trim(),
 
-            recipient:match[4].trim(),
+            recipient:
+                match[4].trim(),
 
-            message:match[5].trim()
+            message:
+                match[5].trim()
 
         };
 
     }
 
 
-    /*
-        FORMAT 5
 
-        20:11:32 - From Name to Everyone:
-    */
+    /* =====================================================
+       FORMAT 5
 
-    match = clean.match(
-        /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
-    );
+       20:11:32 - From Name to Everyone:
+    ===================================================== */
+
+    match =
+        clean.match(
+            /^\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*[-–—]\s*From\s+(.+?)\s+to\s+(.+?)\s*:\s*(.*)$/i
+        );
 
 
     if(match){
@@ -770,13 +1110,17 @@ function detectHeader(line){
 
             date:"",
 
-            time:match[1],
+            time:
+                match[1],
 
-            participant:match[2].trim(),
+            participant:
+                match[2].trim(),
 
-            recipient:match[3].trim(),
+            recipient:
+                match[3].trim(),
 
-            message:match[4].trim()
+            message:
+                match[4].trim()
 
         };
 
@@ -788,20 +1132,18 @@ function detectHeader(line){
 }
 
 
+
 /* =========================================================
    PARSE CHAT
 ========================================================= */
 
 function parseChat(text){
 
-    /*
-       Normalize Windows / Mac line endings.
-    */
-
-    const lines = text
-        .replace(/\r\n/g,"\n")
-        .replace(/\r/g,"\n")
-        .split("\n");
+    const lines =
+        text
+            .replace(/\r\n/g,"\n")
+            .replace(/\r/g,"\n")
+            .split("\n");
 
 
     const records = [];
@@ -809,16 +1151,20 @@ function parseChat(text){
     let current = null;
 
 
+
     function saveCurrent(){
 
         if(!current){
+
             return;
+
         }
 
 
-        current.message = normalizeMessage(
-            current.message
-        );
+        current.message =
+            normalizeMessage(
+                current.message
+            );
 
 
         if(
@@ -826,48 +1172,60 @@ function parseChat(text){
             current.message
         ){
 
-            records.push(current);
+            records.push(
+                current
+            );
 
         }
 
     }
 
 
-    for(let i=0; i<lines.length; i++){
 
-        let rawLine = lines[i];
+    for(
+        let i = 0;
+        i < lines.length;
+        i++
+    ){
 
-        /*
-           Remove BOM only from beginning.
-        */
-
-        rawLine = rawLine.replace(/^\uFEFF/,"");
+        let rawLine =
+            lines[i];
 
 
-        const header = detectHeader(rawLine);
+        rawLine =
+            rawLine.replace(
+                /^\uFEFF/,
+                ""
+            );
+
+
+        const header =
+            detectHeader(
+                rawLine
+            );
 
 
         if(header){
-
-            /*
-               New message found.
-               Save previous one first.
-            */
 
             saveCurrent();
 
 
             current = {
 
-                date:header.date || "",
+                date:
+                    header.date || "",
 
-                time:header.time || "",
+                time:
+                    header.time || "",
 
-                participant:header.participant || "",
+                participant:
+                    header.participant || "",
 
-                recipient:header.recipient || "",
+                recipient:
+                    header.recipient || "",
 
-                message:header.message || ""
+                message:
+                    header.message || ""
 
             };
 
@@ -877,15 +1235,9 @@ function parseChat(text){
         }
 
 
+
         /*
-           If current message exists,
-           this is a continuation line.
-
-           Example:
-
-           From Dr Prabhakar Raj Team to Everyone:
-           For any doubts
-           Team : 8925844241
+           Continuation line.
         */
 
         if(current){
@@ -899,9 +1251,11 @@ function parseChat(text){
                 if(current.message){
 
                     current.message +=
-                        " " + continuation;
+                        " " +
+                        continuation;
 
-                }else{
+                }
+                else{
 
                     current.message =
                         continuation;
@@ -915,9 +1269,6 @@ function parseChat(text){
     }
 
 
-    /*
-       Save final message.
-    */
 
     saveCurrent();
 
@@ -925,6 +1276,7 @@ function parseChat(text){
     return records;
 
 }
+
 
 
 /* =========================================================
@@ -940,30 +1292,30 @@ function normalizeMessage(message){
 }
 
 
+
 /* =========================================================
-   CLEAN PARTICIPANT NAME
+   CLEAN PARTICIPANT
 ========================================================= */
 
 function cleanParticipant(name){
 
-    let value = String(name || "")
-        .replace(/\s+/g," ")
-        .trim();
+    let value =
+        String(name || "")
+            .replace(/\s+/g," ")
+            .trim();
 
 
-    /*
-       Remove common accidental prefixes.
-    */
-
-    value = value.replace(
-        /^From\s+/i,
-        ""
-    );
+    value =
+        value.replace(
+            /^From\s+/i,
+            ""
+        );
 
 
     return value;
 
 }
+
 
 
 /* =========================================================
@@ -973,79 +1325,95 @@ function cleanParticipant(name){
 function getNumber(text){
 
     if(!text){
+
         return null;
+
     }
 
 
-    let value = String(text);
+    let value =
+        String(text);
 
 
-    /*
-       Convert non-breaking spaces.
-    */
+    value =
+        value.replace(
+            /\u00A0/g,
+            " "
+        );
 
-    value = value.replace(/\u00A0/g," ");
 
 
-    /*
-       First check +91 / 91 format.
-    */
+    /* =====================================================
+       +91 / 91 FORMAT
+    ===================================================== */
 
-    let match = value.match(
-        /(?:\+?\s*91)[\s-]*([6-9]\d{4})[\s-]?(\d{5})\b/
-    );
+    let match =
+        value.match(
+            /(?:\+?\s*91)[\s-]*([6-9]\d{4})[\s-]?(\d{5})\b/
+        );
 
 
     if(match){
 
-        return match[1] + match[2];
+        return (
+            match[1] +
+            match[2]
+        );
 
     }
 
 
-    /*
-       Indian number with space:
 
+    /* =====================================================
        99446 17313
-    */
+    ===================================================== */
 
-    match = value.match(
-        /\b([6-9]\d{4})[\s-](\d{5})\b/
-    );
+    match =
+        value.match(
+            /\b([6-9]\d{4})[\s-](\d{5})\b/
+        );
 
 
     if(match){
 
-        return match[1] + match[2];
+        return (
+            match[1] +
+            match[2]
+        );
 
     }
 
 
-    /*
-       Indian number with hyphen:
 
+    /* =====================================================
        99446-17313
-    */
+    ===================================================== */
 
-    match = value.match(
-        /\b([6-9]\d{4})-(\d{5})\b/
-    );
+    match =
+        value.match(
+            /\b([6-9]\d{4})-(\d{5})\b/
+        );
 
 
     if(match){
 
-        return match[1] + match[2];
+        return (
+            match[1] +
+            match[2]
+        );
 
     }
 
 
-    /*
-       Normal 10 digit mobile number.
-    */
 
-    match = value.match(
-        /\b([6-9]\d{9})\b/
-    );
+    /* =====================================================
+       NORMAL 10 DIGIT NUMBER
+    ===================================================== */
+
+    match =
+        value.match(
+            /\b([6-9]\d{9})\b/
+        );
 
 
     if(match){
@@ -1055,34 +1423,34 @@ function getNumber(text){
     }
 
 
-    /*
-       Last fallback:
-       Search digit groups and combine.
 
-       This helps with formats such as:
-
-       9944 617 313
-       99446 173 13
-    */
+    /* =====================================================
+       FALLBACK DIGIT GROUPS
+    ===================================================== */
 
     const digitGroups =
-        value.match(/\d[\d\s-]{7,}\d/g);
+        value.match(
+            /\d[\d\s-]{7,}\d/g
+        );
 
 
     if(digitGroups){
 
-        for(const group of digitGroups){
+        for(
+            const group of digitGroups
+        ){
 
             const digits =
-                group.replace(/\D/g,"");
+                group.replace(
+                    /\D/g,
+                    ""
+                );
 
-
-            /*
-               Indian number inside longer text.
-            */
 
             const index =
-                digits.search(/[6-9]\d{9}/);
+                digits.search(
+                    /[6-9]\d{9}/
+                );
 
 
             if(index !== -1){
@@ -1104,6 +1472,152 @@ function getNumber(text){
 }
 
 
+
+/* =========================================================
+   STANDALONE HELP
+========================================================= */
+
+function isStandaloneHelp(message){
+
+    const text =
+        String(message || "")
+            .trim()
+            .toLowerCase();
+
+
+    return (
+        text === "help"
+    );
+
+}
+
+
+
+/* =========================================================
+   STANDALONE TIME
+========================================================= */
+
+function isStandaloneTime(message){
+
+    const text =
+        String(message || "")
+            .trim()
+            .toLowerCase();
+
+
+    return (
+        text === "time"
+    );
+
+}
+
+
+
+/* =========================================================
+   NUMBER ONLY CHECK
+========================================================= */
+
+function isNumberOnlyMessage(
+    text,
+    number
+){
+
+    if(
+        !text ||
+        !number
+    ){
+
+        return false;
+
+    }
+
+
+    let value =
+        String(text)
+            .replace(
+                /\u00A0/g,
+                " "
+            )
+            .trim();
+
+
+    /*
+       Remove +91.
+    */
+
+    value =
+        value.replace(
+            /^\+?\s*91[\s-]*/,
+            ""
+        );
+
+
+    /*
+       Remove spaces and hyphens.
+    */
+
+    value =
+        value.replace(
+            /[\s-]/g,
+            ""
+        );
+
+
+    return (
+        value === number
+    );
+
+}
+
+
+
+/* =========================================================
+   TIME MESSAGE CHECK
+========================================================= */
+
+function isTimeMessage(message){
+
+    const text =
+        String(message || "")
+            .toLowerCase();
+
+
+    return (
+
+        /\btime\b/i.test(text) ||
+
+        /\bwhen\b/i.test(text) ||
+
+        /\bwhat\s*time\b/i.test(text) ||
+
+        /\btiming\b/i.test(text) ||
+
+        /\bclock\b/i.test(text) ||
+
+        /\bhour\b/i.test(text) ||
+
+        /\bhours\b/i.test(text) ||
+
+        /\bminute\b/i.test(text) ||
+
+        /\bminutes\b/i.test(text) ||
+
+        /\bclass\s*start\b/i.test(text) ||
+
+        /\bstart\s*time\b/i.test(text) ||
+
+        /\bschedule\b/i.test(text) ||
+
+        /நேரம்/i.test(text) ||
+
+        /மணி/i.test(text)
+
+    );
+
+}
+
+
+
 /* =========================================================
    STATUS CLASSIFICATION
 ========================================================= */
@@ -1112,20 +1626,20 @@ function classifyStatus(message){
 
     const text =
         String(message || "")
-        .toLowerCase();
+            .toLowerCase();
 
 
     /*
-       HELP has highest priority.
+       HELP
+
+       ONLY "help" is used.
+
+       support / assist / doubt etc.
+       are NOT automatically Help.
     */
 
     if(
-        /\bhelp\b/i.test(text) ||
-        /\bassist\b/i.test(text) ||
-        /\bsupport\b/i.test(text) ||
-        /உதவி/i.test(text) ||
-        /சந்தேகம்/i.test(text) ||
-        /doubt/i.test(text)
+        /\bhelp\b/i.test(text)
     ){
 
         return "Help";
@@ -1133,8 +1647,9 @@ function classifyStatus(message){
     }
 
 
+
     /*
-       TIME category.
+       TIME
     */
 
     if(
@@ -1149,7 +1664,6 @@ function classifyStatus(message){
         /\bminutes\b/i.test(text) ||
         /\bclass\s*start\b/i.test(text) ||
         /\bstart\s*time\b/i.test(text) ||
-        /\bstart\b/i.test(text) ||
         /\bschedule\b/i.test(text) ||
         /நேரம்/i.test(text) ||
         /மணி/i.test(text)
@@ -1165,30 +1679,37 @@ function classifyStatus(message){
 }
 
 
+
 /* =========================================================
    REMOVE DUPLICATES
 ========================================================= */
 
 function removeDuplicates(data){
 
-    const map = new Map();
+    const map =
+        new Map();
 
 
-    data.forEach(item => {
+    data.forEach(function(item){
 
-        const key = item.number;
+        const key =
+            item.number;
 
 
         if(!map.has(key)){
 
-            map.set(key,item);
+            map.set(
+                key,
+                item
+            );
 
             return;
 
         }
 
 
-        const old = map.get(key);
+        const old =
+            map.get(key);
 
 
         /*
@@ -1222,9 +1743,15 @@ function removeDuplicates(data){
            Better category wins.
         */
 
-        if(newPriority < oldPriority){
+        if(
+            newPriority <
+            oldPriority
+        ){
 
-            map.set(key,item);
+            map.set(
+                key,
+                item
+            );
 
             return;
 
@@ -1236,19 +1763,31 @@ function removeDuplicates(data){
            latest message wins.
         */
 
-        if(newPriority === oldPriority){
+        if(
+            newPriority ===
+            oldPriority
+        ){
 
             const oldTime =
-                getDateTimeValue(old);
+                getDateTimeValue(
+                    old
+                );
 
 
             const newTime =
-                getDateTimeValue(item);
+                getDateTimeValue(
+                    item
+                );
 
 
-            if(newTime >= oldTime){
+            if(
+                newTime >= oldTime
+            ){
 
-                map.set(key,item);
+                map.set(
+                    key,
+                    item
+                );
 
             }
 
@@ -1257,9 +1796,12 @@ function removeDuplicates(data){
     });
 
 
-    return Array.from(map.values());
+    return Array.from(
+        map.values()
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1269,40 +1811,42 @@ function removeDuplicates(data){
 function getDateTimeValue(item){
 
     let datePart =
-        item.date || "1970-01-01";
+        item.date ||
+        "1970-01-01";
 
-
-    /*
-       If date format is YYYY-MM-DD,
-       this works directly.
-
-       If only time exists,
-       it still sorts by time.
-    */
 
     const value =
-        (datePart + " " + (item.time || "00:00:00"))
-        .trim();
+        (
+            datePart +
+            " " +
+            (
+                item.time ||
+                "00:00:00"
+            )
+        ).trim();
 
 
     const parsed =
         new Date(value);
 
 
-    if(!isNaN(parsed.getTime())){
+    if(
+        !isNaN(
+            parsed.getTime()
+        )
+    ){
 
         return parsed.getTime();
 
     }
 
 
-    /*
-       Fallback manual time conversion.
-    */
-
     const match =
-        String(item.time || "")
-        .match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+        String(
+            item.time || ""
+        ).match(
+            /(\d{1,2}):(\d{2})(?::(\d{2}))?/
+        );
 
 
     if(match){
@@ -1321,20 +1865,26 @@ function getDateTimeValue(item){
 }
 
 
+
 /* =========================================================
    SORT DATA
 ========================================================= */
 
 function sortData(){
 
-    finalData.sort(function(a,b){
+    finalData.sort(
+        function(a,b){
 
-        return getDateTimeValue(a) -
-               getDateTimeValue(b);
+            return (
+                getDateTimeValue(a) -
+                getDateTimeValue(b)
+            );
 
-    });
+        }
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1344,7 +1894,9 @@ function sortData(){
 function renderTable(){
 
     const tbody =
-        document.getElementById("resultBody");
+        document.getElementById(
+            "resultBody"
+        );
 
 
     tbody.innerHTML = "";
@@ -1353,82 +1905,112 @@ function renderTable(){
     if(!finalData.length){
 
         tbody.innerHTML = `
+
             <tr>
-                <td colspan="5" class="empty">
+
+                <td
+                    colspan="5"
+                    class="empty"
+                >
                     Upload a Zoom TXT file to see results
                 </td>
+
             </tr>
+
         `;
 
 
         updateStats();
 
         return;
+
     }
 
 
-    finalData.forEach(function(item,index){
 
-        const row =
-            document.createElement("tr");
+    finalData.forEach(
+        function(item,index){
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
 
-        let statusClass =
-            "status-others";
+            let statusClass =
+                "status-others";
 
 
-        if(item.status === "Help"){
+            if(
+                item.status === "Help"
+            ){
 
-            statusClass =
-                "status-help";
+                statusClass =
+                    "status-help";
 
-        }else if(item.status === "Time"){
+            }
+            else if(
+                item.status === "Time"
+            ){
 
-            statusClass =
-                "status-time";
+                statusClass =
+                    "status-time";
+
+            }
+
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        formatDateTime(item)
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        item.participant
+                    )}
+                </td>
+
+                <td class="number">
+                    ${escapeHTML(
+                        item.number
+                    )}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${statusClass}"
+                    >
+                        ${escapeHTML(
+                            item.status
+                        )}
+                    </span>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
 
         }
-
-
-        row.innerHTML = `
-
-            <td>${index + 1}</td>
-
-            <td>
-                ${escapeHTML(
-                    formatDateTime(item)
-                )}
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    item.participant
-                )}
-            </td>
-
-            <td class="number">
-                ${escapeHTML(
-                    item.number
-                )}
-            </td>
-
-            <td>
-                <span class="status ${statusClass}">
-                    ${escapeHTML(item.status)}
-                </span>
-            </td>
-
-        `;
-
-
-        tbody.appendChild(row);
-
-    });
+    );
 
 
     updateStats();
 
 }
+
 
 
 /* =========================================================
@@ -1437,11 +2019,16 @@ function renderTable(){
 
 function formatDateTime(item){
 
-    if(item.date && item.time){
+    if(
+        item.date &&
+        item.time
+    ){
 
-        return item.date +
+        return (
+            item.date +
             " " +
-            item.time;
+            item.time
+        );
 
     }
 
@@ -1449,6 +2036,7 @@ function formatDateTime(item){
     return item.time || "";
 
 }
+
 
 
 /* =========================================================
@@ -1459,20 +2047,24 @@ function updateStats(){
 
     const help =
         finalData.filter(
-            x => x.status === "Help"
+            x =>
+                x.status === "Help"
         ).length;
 
 
     const time =
         finalData.filter(
-            x => x.status === "Time"
+            x =>
+                x.status === "Time"
         ).length;
 
 
     const others =
         finalData.filter(
-            x => x.status === "Others"
+            x =>
+                x.status === "Others"
         ).length;
+
 
 
     document.getElementById(
@@ -1507,8 +2099,9 @@ function updateStats(){
 }
 
 
+
 /* =========================================================
-   CSV DOWNLOAD
+   DOWNLOAD CSV
 ========================================================= */
 
 function downloadCSV(){
@@ -1521,6 +2114,7 @@ function downloadCSV(){
         );
 
         return;
+
     }
 
 
@@ -1543,81 +2137,98 @@ function downloadCSV(){
     ];
 
 
-    const rows = [headers];
+    const rows =
+        [headers];
 
 
-    finalData.forEach(function(item,index){
+    finalData.forEach(
+        function(item,index){
 
-        rows.push([
+            rows.push([
 
-            index + 1,
+                index + 1,
 
-            item.date,
+                item.date,
 
-            item.time,
+                item.time,
 
-            item.participant,
+                item.participant,
 
-            item.number,
+                item.number,
 
-            item.status,
+                item.status,
 
-            item.message
+                item.message
 
-        ]);
+            ]);
 
-    });
+        }
+    );
 
 
     const csv =
         rows
-        .map(row =>
-            row.map(csvEscape).join(",")
-        )
-        .join("\r\n");
+            .map(
+                row =>
+                    row
+                        .map(csvEscape)
+                        .join(",")
+            )
+            .join("\r\n");
 
-
-    /*
-       UTF-8 BOM helps Excel display
-       Tamil correctly.
-    */
 
     const blob =
         new Blob(
-            ["\uFEFF" + csv],
+            [
+                "\uFEFF" +
+                csv
+            ],
             {
-                type:"text/csv;charset=utf-8;"
+                type:
+                    "text/csv;charset=utf-8;"
             }
         );
 
 
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
 
 
     const link =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
 
-    link.href = url;
+    link.href =
+        url;
 
 
     link.download =
         "zoom_chat_extracted.csv";
 
 
-    document.body.appendChild(link);
+    document.body.appendChild(
+        link
+    );
 
 
     link.click();
 
 
-    document.body.removeChild(link);
+    document.body.removeChild(
+        link
+    );
 
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(
+        url
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1627,14 +2238,22 @@ function downloadCSV(){
 function csvEscape(value){
 
     const text =
-        String(value ?? "");
+        String(
+            value ?? ""
+        );
 
 
-    return '"' +
-        text.replace(/"/g,'""') +
-        '"';
+    return (
+        '"' +
+        text.replace(
+            /"/g,
+            '""'
+        ) +
+        '"'
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1662,11 +2281,15 @@ function clearData(){
 }
 
 
+
 /* =========================================================
    MESSAGE
 ========================================================= */
 
-function showMessage(message,isError){
+function showMessage(
+    message,
+    isError
+){
 
     const box =
         document.getElementById(
@@ -1676,19 +2299,23 @@ function showMessage(message,isError){
 
     if(!message){
 
-        box.style.display = "none";
+        box.style.display =
+            "none";
 
-        box.textContent = "";
+        box.textContent =
+            "";
 
         return;
 
     }
 
 
-    box.style.display = "block";
+    box.style.display =
+        "block";
 
 
-    box.textContent = message;
+    box.textContent =
+        message;
 
 
     if(isError){
@@ -1699,7 +2326,8 @@ function showMessage(message,isError){
         box.style.color =
             "#991b1b";
 
-    }else{
+    }
+    else{
 
         box.style.background =
             "#eff6ff";
@@ -1712,20 +2340,39 @@ function showMessage(message,isError){
 }
 
 
+
 /* =========================================================
    HTML ESCAPE
 ========================================================= */
 
 function escapeHTML(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
+
 
 
 /* =========================================================
@@ -1736,5 +2383,8 @@ updateStats();
 
 </script>
 
+
 </body>
+
 </html>
+```
