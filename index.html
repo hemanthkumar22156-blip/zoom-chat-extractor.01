@@ -987,12 +987,7 @@ function processFile(text) {
   });
 
 
-  extractedRows =
-    Array.from(uniqueMap.values());
-
-
-  renderTable();
-
+  extractedRows =     Array.from(uniqueMap.values());  /* TIME ASCENDING ORDER */ extractedRows.sort((a, b) => {    const timeA = a.time.split(":").map(Number);   const timeB = b.time.split(":").map(Number);    const secondsA =     timeA[0] * 3600 +     timeA[1] * 60 +     timeA[2];    const secondsB =     timeB[0] * 3600 +     timeB[1] * 60 +     timeB[2];    return secondsA - secondsB; });   renderTable();
 
   updateStats();
 
