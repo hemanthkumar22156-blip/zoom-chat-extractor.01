@@ -1,1293 +1,1143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoom Chat Extractor</title>
 
-  <!-- TAB BAR LOGO / FAVICON -->
-  <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+<link rel="icon" href="/zoom-chat-extractor.01/favicon.ico?v=10" type="image/x-icon">
+<link rel="shortcut icon" href="/zoom-chat-extractor.01/favicon.ico?v=10" type="image/x-icon">
 
-  <title>Zoom Chat Extractor</title>
+<style>
+*{
+    box-sizing:border-box;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f7fb;
+    color:#222;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px;
+}
+
+.header{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.header img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+}
+
+.header h1{
+    margin:0;
+    font-size:28px;
+}
+
+.upload-box{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+input[type=file]{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+button{
+    margin-top:15px;
+    padding:11px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-right:8px;
+}
+
+#extractBtn{
+    background:#2563eb;
+    color:white;
+}
+
+#downloadBtn{
+    background:#16a34a;
+    color:white;
+}
+
+#printBtn{
+    background:#555;
+    color:white;
+}
+
+.stats{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:15px 20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    min-width:130px;
+}
+
+.stat b{
+    display:block;
+    font-size:22px;
+    margin-top:5px;
+}
+
+.table-box{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+    text-align:left;
+    white-space:nowrap;
+}
+
+th{
+    background:#f1f5f9;
+}
+
+.status-help{
+    font-weight:bold;
+    color:#dc2626;
+}
+
+.status-time{
+    font-weight:bold;
+    color:#2563eb;
+}
+
+.status-others{
+    color:#555;
+}
+
+#message{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+@media(max-width:700px){
+    .container{
+        padding:12px;
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7fb;
-      color: #222;
+    .header h1{
+        font-size:22px;
     }
 
-    .header {
-      background: #ffffff;
-      padding: 18px 25px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .header img{
+        width:45px;
+        height:45px;
+    }
+}
+
+@media print{
+    .upload-box,
+    .stats button{
+        display:none;
     }
 
-    .header img {
-      width: 45px;
-      height: 45px;
-      object-fit: contain;
-      border-radius: 8px;
+    body{
+        background:white;
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #222;
+    .container{
+        max-width:none;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .upload-box {
-      background: white;
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-      margin-bottom: 25px;
-    }
-
-    .upload-box h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 20px;
-    }
-
-    input[type="file"] {
-      width: 100%;
-      padding: 12px;
-      border: 2px dashed #aaa;
-      border-radius: 10px;
-      background: #fafafa;
-      cursor: pointer;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    button {
-      border: none;
-      padding: 11px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .btn-download {
-      background: #198754;
-      color: white;
-    }
-
-    .btn-print {
-      background: #0d6efd;
-      color: white;
-    }
-
-    .btn-clear {
-      background: #dc3545;
-      color: white;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-    }
-
-    .stat-card h3 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .stat-card p {
-      margin: 0;
-      font-size: 26px;
-      font-weight: bold;
-    }
-
-    .table-box {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 750px;
-    }
-
-    th {
-      background: #212529;
-      color: white;
-      padding: 12px;
-      text-align: left;
-    }
-
-    td {
-      padding: 11px;
-      border-bottom: 1px solid #eee;
-    }
-
-    tr:hover {
-      background: #f8f9fa;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .status-help {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .status-time {
-      background: #cff4fc;
-      color: #055160;
-    }
-
-    .status-others {
-      background: #e2e3e5;
-      color: #41464b;
-    }
-
-    .message {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .success {
-      background: #d1e7dd;
-      color: #0f5132;
-    }
-
-    .error {
-      background: #f8d7da;
-      color: #842029;
-    }
-
-    @media (max-width: 800px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 500px) {
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .header h1 {
-        font-size: 19px;
-      }
-    }
-
-    @media print {
-      .upload-box,
-      .buttons,
-      .stats {
-        display: none !important;
-      }
-
-      body {
-        background: white;
-      }
-
-      .container {
-        margin: 0;
-        max-width: 100%;
-      }
-
-      .table-box {
-        box-shadow: none;
-        padding: 0;
-      }
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-  <div class="header">
-    <img
-      src="./favicon.ico"
-      alt="Logo"
-      onerror="this.style.display='none'"
-    >
-    <h1>Zoom Chat Extractor</h1>
-  </div>
+<div class="container">
 
-  <div class="container">
+    <div class="header">
+        <img src="/zoom-chat-extractor.01/favicon.ico?v=10"
+             alt="Zoom Chat Extractor">
+        <h1>Zoom Chat Extractor</h1>
+    </div>
 
     <div class="upload-box">
 
-      <h2>Upload Zoom Chat TXT File</h2>
+        <input type="file" id="fileInput" accept=".txt,text/plain">
 
-      <input
-        type="file"
-        id="fileInput"
-        accept=".txt,text/plain"
-      >
+        <br>
 
-      <div class="buttons">
+        <button id="extractBtn">Extract Chat</button>
+        <button id="downloadBtn">Download CSV</button>
+        <button id="printBtn">Print / Save PDF</button>
 
-        <button
-          class="btn-download"
-          onclick="downloadCSV()"
-        >
-          Download CSV
-        </button>
-
-        <button
-          class="btn-print"
-          onclick="window.print()"
-        >
-          Print / Save PDF
-        </button>
-
-        <button
-          class="btn-clear"
-          onclick="clearData()"
-        >
-          Clear
-        </button>
-
-      </div>
-
-      <div
-        id="message"
-        class="message"
-      ></div>
+        <div id="message"></div>
 
     </div>
-
 
     <div class="stats">
 
-      <div class="stat-card">
-        <h3>Unique Rows</h3>
-        <p id="uniqueCount">0</p>
-      </div>
+        <div class="stat">
+            Unique Rows
+            <b id="uniqueCount">0</b>
+        </div>
 
-      <div class="stat-card">
-        <h3>Help</h3>
-        <p id="helpCount">0</p>
-      </div>
+        <div class="stat">
+            Help
+            <b id="helpCount">0</b>
+        </div>
 
-      <div class="stat-card">
-        <h3>Time</h3>
-        <p id="timeCount">0</p>
-      </div>
+        <div class="stat">
+            Time
+            <b id="timeCount">0</b>
+        </div>
 
-      <div class="stat-card">
-        <h3>Others</h3>
-        <p id="othersCount">0</p>
-      </div>
+        <div class="stat">
+            Others
+            <b id="othersCount">0</b>
+        </div>
 
-      <div class="stat-card">
-        <h3>Numbers</h3>
-        <p id="numberCount">0</p>
-      </div>
+        <div class="stat">
+            Numbers
+            <b id="numberCount">0</b>
+        </div>
 
     </div>
-
 
     <div class="table-box">
 
-      <table id="resultTable">
+        <table id="resultTable">
 
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Chat Time</th>
-            <th>Participant Name</th>
-            <th>Extracted Number</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Chat Time</th>
+                    <th>Participant Name</th>
+                    <th>Extracted Number</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
 
-        <tbody id="resultBody">
-        </tbody>
+            <tbody id="resultBody">
+            </tbody>
 
-      </table>
+        </table>
 
     </div>
 
-  </div>
+</div>
 
 
 <script>
 
-let extractedRows = [];
+let finalResults = [];
 
 
-/* =========================
-   FILE UPLOAD
-========================= */
+/* =========================================
+   STATUS PRIORITY
+   Help = 3
+   Time = 2
+   Others = 1
+========================================= */
 
-document
-  .getElementById("fileInput")
-  .addEventListener("change", function(event) {
+function getPriority(status){
 
-    const file = event.target.files[0];
+    if(status === "Help") return 3;
+    if(status === "Time") return 2;
 
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-
-      processFile(e.target.result);
-
-    };
-
-    reader.readAsText(file);
-
-  });
-
-
-
-/* =========================
-   SHOW MESSAGE
-========================= */
-
-function showMessage(text, type) {
-
-  const box = document.getElementById("message");
-
-  box.textContent = text;
-
-  box.className = "message " + type;
-
-  box.style.display = "block";
-
+    return 1;
 }
 
 
+/* =========================================
+   CONVERT TIME TO SECONDS
+========================================= */
 
-/* =========================
-   NORMALIZE PHONE
-========================= */
+function timeToSeconds(time){
 
-function normalizePhone(phone) {
+    if(!time) return 0;
 
-  let digits = String(phone || "").replace(/\D/g, "");
+    const parts = time.split(":").map(Number);
 
-  if (digits.length === 12 && digits.startsWith("91")) {
-    digits = digits.substring(2);
-  }
+    if(parts.length === 2){
+        return parts[0] * 3600 + parts[1] * 60;
+    }
 
-  return digits;
-
+    return parts[0] * 3600 +
+           parts[1] * 60 +
+           parts[2];
 }
 
 
+/* =========================================
+   PARSE ZOOM CHAT HEADER
+========================================= */
 
-/* =========================
-   EXTRACT PHONE
-========================= */
+function parseChatHeader(line){
 
-function extractPhone(text) {
+    const pattern =
+        /^\s*\[?\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]?\s*(?:[-–—]\s*)?From\s+(.+?)(?:\s+to\s+[^:]+)?\s*:\s*(.*)$/i;
 
-  if (!text) return null;
+    const match = line.match(pattern);
 
-  let clean = text.replace(/\u00A0/g, " ");
-
-  /* +91 format */
-  let match = clean.match(
-    /(?:\+91|91)[\s\-]*(\d{5})[\s\-]*(\d{5})/
-  );
-
-  if (match) {
-    return match[1] + match[2];
-  }
-
-
-  /* Normal 10 digit */
-  match = clean.match(
-    /(?<!\d)([6-9]\d{9})(?!\d)/
-  );
-
-  if (match) {
-    return match[1];
-  }
-
-
-  /* Spaces / hyphens */
-  match = clean.match(
-    /(?<!\d)([6-9]\d{4})[\s\-]+(\d{5})(?!\d)/
-  );
-
-  if (match) {
-    return match[1] + match[2];
-  }
-
-
-  /* Any digit groups which finally make 10 digits */
-  let digits = clean.replace(/\D/g, "");
-
-  if (
-    digits.length === 10 &&
-    /^[6-9]/.test(digits)
-  ) {
-    return digits;
-  }
-
-  if (
-    digits.length === 12 &&
-    digits.startsWith("91") &&
-    /^[6-9]/.test(digits.substring(2))
-  ) {
-    return digits.substring(2);
-  }
-
-  return null;
-
-}
-
-
-
-/* =========================
-   STANDALONE HELP
-========================= */
-
-function isStandaloneHelp(message) {
-
-  return (
-    String(message || "")
-      .trim()
-      .toLowerCase() === "help"
-  );
-
-}
-
-
-
-/* =========================
-   STANDALONE TIME
-========================= */
-
-function isStandaloneTime(message) {
-
-  return (
-    String(message || "")
-      .trim()
-      .toLowerCase() === "time"
-  );
-
-}
-
-
-
-/* =========================
-   NUMBER ONLY MESSAGE
-========================= */
-
-function isNumberOnlyMessage(text, number) {
-
-  if (!text || !number) return false;
-
-  let normalizedText = normalizePhone(text);
-
-  return normalizedText === number;
-
-}
-
-
-
-/* =========================
-   STATUS FROM SAME MESSAGE
-========================= */
-
-function classifyStatus(message) {
-
-  const msg = String(message || "")
-    .trim()
-    .toLowerCase();
-
-
-  /* Help */
-  if (
-    /\bhelp\b/i.test(msg)
-  ) {
-    return "Help";
-  }
-
-
-  /* Time */
-  if (
-    /\btime\b/i.test(msg) ||
-    /\bwhen\b/i.test(msg) ||
-    /\bdelay\b/i.test(msg) ||
-    /\blate\b/i.test(msg)
-  ) {
-    return "Time";
-  }
-
-
-  return "Others";
-
-}
-
-
-
-/* =========================
-   PARSE ZOOM HEADER
-========================= */
-
-function parseZoomHeader(line) {
-
-  let participant = "";
-  let chatTime = "";
-
-
-  /* 
-     Example:
-     17:46:02 From Dr. Prabhakar Raj to Everyone:
-  */
-
-  let match = line.match(
-    /^(\d{1,2}:\d{2}:\d{2})\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
-  );
-
-  if (match) {
-
-    chatTime = match[1];
-
-    participant = match[2].trim();
+    if(!match) return null;
 
     return {
-      participant,
-      chatTime
+        time: match[1],
+        name: match[2].trim(),
+        message: match[3].trim()
     };
-
-  }
-
-
-  /*
-     Example:
-     [17:46:02] From Name to Everyone:
-  */
-
-  match = line.match(
-    /^\[?(\d{1,2}:\d{2}:\d{2})\]?\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
-  );
-
-  if (match) {
-
-    chatTime = match[1];
-
-    participant = match[2].trim();
-
-    return {
-      participant,
-      chatTime
-    };
-
-  }
-
-
-  /*
-     Example:
-     2026-09-20 17:46:02 From Name to Everyone:
-  */
-
-  match = line.match(
-    /^\d{4}-\d{1,2}-\d{1,2}\s+(\d{1,2}:\d{2}:\d{2})\s+From\s+(.+?)\s+to\s+.+?:\s*$/i
-  );
-
-  if (match) {
-
-    chatTime = match[1];
-
-    participant = match[2].trim();
-
-    return {
-      participant,
-      chatTime
-    };
-
-  }
-
-
-  /*
-     Example:
-     17:46:02 - From Name to Everyone:
-  */
-
-  match = line.match(
-    /^(\d{1,2}:\d{2}:\d{2})\s*-\s*From\s+(.+?)\s+to\s+.+?:\s*$/i
-  );
-
-  if (match) {
-
-    chatTime = match[1];
-
-    participant = match[2].trim();
-
-    return {
-      participant,
-      chatTime
-    };
-
-  }
-
-
-  return null;
-
 }
 
 
+/* =========================================
+   EXTRACT 10 DIGIT PHONE NUMBER
+========================================= */
 
-/* =========================
-   PROCESS FILE
-========================= */
+function extractPhoneNumber(text){
 
-function processFile(text) {
-
-  extractedRows = [];
-
-
-  const lines = String(text || "")
-    .replace(/\r/g, "")
-    .split("\n");
-
-
-  let currentParticipant = "";
-
-  let currentTime = "";
-
-  let currentMessage = "";
-
-
-  /*
-     Pending status is stored PER PARTICIPANT.
-
-     Example:
-
-     Person A
-     help
-
-     Person B
-     hello
-
-     Person A
-     9883726578
-
-     => Person A number = Help
-  */
-
-  const pendingStatus = new Map();
-
-
-  function processCurrentMessage() {
-
-    if (!currentParticipant) return;
-
-
-    const message = currentMessage
-      .trim();
-
-
-    if (!message) return;
-
-
-    const number = extractPhone(message);
-
+    if(!text) return null;
 
     /*
-       CASE 1:
-       Same message contains number
+       Supports:
 
-       help 9876543210
-       time 9876543210
+       9876543210
+       987 654 3210
+       987-654-3210
+       9876 543 210
+       9876-543-210
     */
 
-    if (number) {
+    const match = text.match(
+        /(?:^|\D)(\d[\d\s-]{8,12}\d)(?!\d)/
+    );
 
-      let status = "Others";
+    if(!match) return null;
+
+    const number = match[1].replace(/\D/g,"");
+
+    if(number.length !== 10) return null;
+
+    return number;
+}
 
 
-      if (
-        /\bhelp\b/i.test(message)
-      ) {
+/* =========================================
+   STATUS DETECTION
+========================================= */
 
-        status = "Help";
+function detectStatus(text){
 
-      }
-      else if (
-        /\btime\b/i.test(message) ||
-        /\bwhen\b/i.test(message) ||
-        /\bdelay\b/i.test(message) ||
-        /\blate\b/i.test(message)
-      ) {
+    if(!text) return "Others";
 
-        status = "Time";
+    const value = text.trim().toLowerCase();
 
-      }
-      else if (
-        isNumberOnlyMessage(message, number)
-      ) {
+    /* HELP */
 
-        /*
-           CASE 2:
-           Number only.
+    if(
+        /\bhelp\b/i.test(value) ||
+        /\bneed help\b/i.test(value) ||
+        /help me/i.test(value)
+    ){
+        return "Help";
+    }
 
-           Check pending status
-           of SAME participant.
-        */
 
-        if (
-          pendingStatus.has(currentParticipant)
-        ) {
+    /* TIME */
 
-          status =
-            pendingStatus.get(currentParticipant);
+    const timeWords =
+        /\b(time|timing|when|schedule|hour|hours|minute|minutes|start\s*time|morning|evening|night)\b/i;
 
-          pendingStatus.delete(
-            currentParticipant
-          );
+    const tamilTimeWords =
+        /(நேரம்|மணி)/i;
+
+    if(
+        timeWords.test(value) ||
+        tamilTimeWords.test(value)
+    ){
+        return "Time";
+    }
+
+
+    return "Others";
+}
+
+
+/* =========================================
+   CHECK WHETHER MESSAGE IS A STATUS MESSAGE
+========================================= */
+
+function isStatusMessage(text){
+
+    if(!text) return false;
+
+    const value = text.trim();
+
+    /*
+       Pure / short status messages.
+
+       Help
+       help
+       Need help
+       Time?
+       Timing?
+       When?
+    */
+
+    if(
+        /^help[\s!?.,]*$/i.test(value) ||
+        /^need\s+help[\s!?.,]*$/i.test(value) ||
+        /^help\s+me[\s!?.,]*$/i.test(value)
+    ){
+        return "Help";
+    }
+
+
+    if(
+        /^(time|timing|when|schedule|hours?|minutes?|morning|evening|night)[\s!?.,]*$/i.test(value) ||
+        /^(நேரம்|மணி)[\s!?.,]*$/i.test(value)
+    ){
+        return "Time";
+    }
+
+
+    return null;
+}
+
+
+/* =========================================
+   MAIN PARSER
+========================================= */
+
+function parseZoomChat(text){
+
+    const lines = text.split(/\r?\n/);
+
+    const messages = [];
+
+    let current = null;
+
+
+    for(let i = 0; i < lines.length; i++){
+
+        const line = lines[i];
+
+        const header = parseChatHeader(line);
+
+
+        if(header){
+
+            if(current){
+
+                messages.push(current);
+
+            }
+
+            current = {
+                time: header.time,
+                name: header.name,
+                message: header.message || ""
+            };
+
+        }else{
+
+            if(current){
+
+                const extra = line.trim();
+
+                if(extra){
+
+                    if(current.message){
+
+                        current.message += " " + extra;
+
+                    }else{
+
+                        current.message = extra;
+
+                    }
+
+                }
+
+            }
 
         }
 
-      }
+    }
 
 
-      extractedRows.push({
+    if(current){
 
-        time: currentTime,
-
-        name: currentParticipant,
-
-        number: number,
-
-        status: status
-
-      });
-
-
-      return;
+        messages.push(current);
 
     }
 
 
-    /*
-       Standalone HELP
+    return messages;
+}
 
-       Store only for SAME participant.
-       Do NOT create a row.
+
+/* =========================================
+   BUILD CUSTOMER RECORDS
+
+   IMPORTANT:
+
+   Number first -> Help later = Help
+
+   Help first -> Number later = Help
+
+   Number first -> Time later = Time
+
+   Time first -> Number later = Time
+
+   Help always beats Time
+========================================= */
+
+function buildCustomerRecords(messages){
+
+    /*
+       Temporary records.
+
+       We keep status messages separately because
+       status may come BEFORE the number.
     */
 
-    if (isStandaloneHelp(message)) {
+    const pendingByName = new Map();
 
-      pendingStatus.set(
-        currentParticipant,
-        "Help"
-      );
+    const records = [];
 
-      return;
+
+    for(let i = 0; i < messages.length; i++){
+
+        const msg = messages[i];
+
+        const phone = extractPhoneNumber(msg.message);
+
+        const detectedStatus = detectStatus(msg.message);
+
+        const pureStatus = isStatusMessage(msg.message);
+
+
+        /* =====================================
+           CASE 1:
+           MESSAGE HAS PHONE NUMBER
+        ===================================== */
+
+        if(phone){
+
+            const key = msg.name.trim().toLowerCase();
+
+
+            /*
+               Check whether customer already has
+               a previous Help / Time message.
+            */
+
+            let record = records.find(
+                r =>
+                    r.name.trim().toLowerCase() === key &&
+                    r.number === phone
+            );
+
+
+            if(!record){
+
+                record = {
+                    name: msg.name,
+                    number: phone,
+                    status: "Others",
+                    time: msg.time,
+                    timeSeconds: timeToSeconds(msg.time),
+                    index: i
+                };
+
+                records.push(record);
+
+            }
+
+
+            /*
+               If current message itself contains
+               Help / Time, apply it.
+            */
+
+            if(detectedStatus === "Help"){
+
+                record.status = "Help";
+                record.time = msg.time;
+                record.timeSeconds = timeToSeconds(msg.time);
+                record.index = i;
+
+            }
+            else if(
+                detectedStatus === "Time" &&
+                getPriority(record.status) < getPriority("Time")
+            ){
+
+                record.status = "Time";
+                record.time = msg.time;
+                record.timeSeconds = timeToSeconds(msg.time);
+                record.index = i;
+
+            }
+
+
+            /*
+               If Help / Time came BEFORE number,
+               apply pending status.
+            */
+
+            const pending = pendingByName.get(key);
+
+            if(pending){
+
+                if(
+                    getPriority(pending.status) >
+                    getPriority(record.status)
+                ){
+
+                    record.status = pending.status;
+                    record.time = pending.time;
+                    record.timeSeconds =
+                        timeToSeconds(pending.time);
+                    record.index = pending.index;
+
+                }
+                else if(
+                    getPriority(pending.status) ===
+                    getPriority(record.status)
+                ){
+
+                    /*
+                       Same priority:
+                       latest status message wins.
+                    */
+
+                    if(
+                        pending.timeSeconds >
+                        record.timeSeconds
+                    ){
+
+                        record.time = pending.time;
+                        record.timeSeconds =
+                            pending.timeSeconds;
+                        record.index = pending.index;
+
+                    }
+
+                }
+
+            }
+
+            continue;
+        }
+
+
+        /* =====================================
+           CASE 2:
+           NO NUMBER
+           BUT MESSAGE IS HELP / TIME
+        ===================================== */
+
+        if(pureStatus){
+
+            const key = msg.name.trim().toLowerCase();
+
+            const status = pureStatus;
+
+            const statusRecord = {
+                status: status,
+                time: msg.time,
+                timeSeconds: timeToSeconds(msg.time),
+                index: i
+            };
+
+
+            /*
+               Save status so that if number comes
+               later, it can be connected.
+            */
+
+            const oldPending = pendingByName.get(key);
+
+
+            if(!oldPending){
+
+                pendingByName.set(key, statusRecord);
+
+            }
+            else if(
+                getPriority(status) >
+                getPriority(oldPending.status)
+            ){
+
+                pendingByName.set(key, statusRecord);
+
+            }
+            else if(
+                getPriority(status) ===
+                getPriority(oldPending.status)
+            ){
+
+                if(
+                    statusRecord.timeSeconds >
+                    oldPending.timeSeconds
+                ){
+
+                    pendingByName.set(key, statusRecord);
+
+                }
+
+            }
+
+
+            /*
+               Also check if this customer already
+               has a number record.
+
+               This handles:
+
+               NUMBER
+               HELP
+            */
+
+            const existingRecords = records.filter(
+                r =>
+                    r.name.trim().toLowerCase() === key
+            );
+
+
+            for(const record of existingRecords){
+
+                const currentPriority =
+                    getPriority(record.status);
+
+                const newPriority =
+                    getPriority(status);
+
+
+                /*
+                   Higher priority always wins.
+                */
+
+                if(newPriority > currentPriority){
+
+                    record.status = status;
+                    record.time = msg.time;
+                    record.timeSeconds =
+                        timeToSeconds(msg.time);
+                    record.index = i;
+
+                }
+                else if(newPriority === currentPriority){
+
+                    /*
+                       Same priority:
+                       latest message wins.
+                    */
+
+                    if(
+                        statusRecord.timeSeconds >
+                        record.timeSeconds
+                    ){
+
+                        record.status = status;
+                        record.time = msg.time;
+                        record.timeSeconds =
+                            statusRecord.timeSeconds;
+                        record.index = i;
+
+                    }
+
+                }
+
+            }
+
+        }
 
     }
 
 
-    /*
-       Standalone TIME
+    return records;
+}
 
-       Store only for SAME participant.
-       Do NOT create a row.
-    */
 
-    if (isStandaloneTime(message)) {
+/* =========================================
+   REMOVE DUPLICATE NUMBERS
 
-      pendingStatus.set(
-        currentParticipant,
-        "Time"
-      );
+   FINAL PRIORITY:
 
-      return;
+   Help > Time > Others
+
+   Same priority:
+   latest status time wins
+========================================= */
+
+function removeDuplicates(records){
+
+    const map = new Map();
+
+
+    for(const record of records){
+
+        const existing = map.get(record.number);
+
+
+        if(!existing){
+
+            map.set(record.number, record);
+            continue;
+
+        }
+
+
+        const newPriority =
+            getPriority(record.status);
+
+        const oldPriority =
+            getPriority(existing.status);
+
+
+        if(newPriority > oldPriority){
+
+            map.set(record.number, record);
+
+        }
+        else if(newPriority === oldPriority){
+
+            if(
+                record.timeSeconds >
+                existing.timeSeconds
+            ){
+
+                map.set(record.number, record);
+
+            }
+
+        }
 
     }
 
 
-    /*
-       Any unrelated message from same person
-       clears pending Help / Time.
-    */
+    return Array.from(map.values());
+}
 
-    pendingStatus.delete(
-      currentParticipant
+
+/* =========================================
+   SORT BY FINAL CHAT TIME
+========================================= */
+
+function sortByChatTime(records){
+
+    return records.sort(
+        (a,b) =>
+            a.timeSeconds - b.timeSeconds
     );
-
-  }
-
-
-
-  for (let i = 0; i < lines.length; i++) {
-
-    const line = lines[i];
-
-
-    const header = parseZoomHeader(line);
-
-
-    if (header) {
-
-      /*
-         Finish previous message
-      */
-
-      processCurrentMessage();
-
-
-      /*
-         Start new message
-      */
-
-      currentParticipant =
-        header.participant;
-
-      currentTime =
-        header.chatTime;
-
-      currentMessage = "";
-
-
-      continue;
-
-    }
-
-
-    /*
-       Message body
-
-       Zoom usually places message
-       after a TAB.
-    */
-
-    if (
-      line.trim() !== ""
-    ) {
-
-      if (currentMessage) {
-
-        currentMessage += " ";
-
-      }
-
-      currentMessage +=
-        line.trim();
-
-    }
-
-  }
-
-
-  /*
-     Process final message
-  */
-
-  processCurrentMessage();
-
-
-  /*
-     Remove duplicate numbers.
-
-     Priority:
-       Help = 1
-       Time = 2
-       Others = 3
-  */
-
-  const priority = {
-    Help: 1,
-    Time: 2,
-    Others: 3
-  };
-
-
-  const uniqueMap = new Map();
-
-
-  extractedRows.forEach(row => {
-
-    const key = row.number;
-
-
-    if (!uniqueMap.has(key)) {
-
-      uniqueMap.set(
-        key,
-        row
-      );
-
-    }
-    else {
-
-      const existing =
-        uniqueMap.get(key);
-
-
-      if (
-        priority[row.status] <
-        priority[existing.status]
-      ) {
-
-        uniqueMap.set(
-          key,
-          row
-        );
-
-      }
-
-    }
-
-  });
-
-
-  extractedRows =     Array.from(uniqueMap.values());  /* TIME ASCENDING ORDER */ extractedRows.sort((a, b) => {    const timeA = a.time.split(":").map(Number);   const timeB = b.time.split(":").map(Number);    const secondsA =     timeA[0] * 3600 +     timeA[1] * 60 +     timeA[2];    const secondsB =     timeB[0] * 3600 +     timeB[1] * 60 +     timeB[2];    return secondsA - secondsB; });   renderTable();
-
-  updateStats();
-
-
-  if (extractedRows.length > 0) {
-
-    showMessage(
-      "File processed successfully. " +
-      extractedRows.length +
-      " unique phone number(s) found.",
-      "success"
-    );
-
-  }
-  else {
-
-    showMessage(
-      "File uploaded, but no 10-digit phone number was found. Please check the Zoom TXT format.",
-      "error"
-    );
-
-  }
 
 }
 
 
-
-/* =========================
+/* =========================================
    RENDER TABLE
-========================= */
+========================================= */
 
-function renderTable() {
+function renderTable(records){
 
-  const body =
-    document.getElementById("resultBody");
+    const body =
+        document.getElementById("resultBody");
 
-
-  body.innerHTML = "";
-
-
-  extractedRows.forEach(
-    (row, index) => {
-
-      const tr =
-        document.createElement("tr");
+    body.innerHTML = "";
 
 
-      let statusClass =
-        "status-others";
+    records.forEach((record,index)=>{
+
+        const row =
+            document.createElement("tr");
 
 
-      if (row.status === "Help") {
+        let statusClass = "status-others";
 
-        statusClass =
-          "status-help";
-
-      }
-      else if (row.status === "Time") {
-
-        statusClass =
-          "status-time";
-
-      }
+        if(record.status === "Help"){
+            statusClass = "status-help";
+        }
+        else if(record.status === "Time"){
+            statusClass = "status-time";
+        }
 
 
-      tr.innerHTML = `
-
-        <td>${index + 1}</td>
-
-        <td>${escapeHtml(row.time)}</td>
-
-        <td>${escapeHtml(row.name)}</td>
-
-        <td>${escapeHtml(row.number)}</td>
-
-        <td>
-          <span class="status ${statusClass}">
-            ${escapeHtml(row.status)}
-          </span>
-        </td>
-
-      `;
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${escapeHtml(record.time)}</td>
+            <td>${escapeHtml(record.name)}</td>
+            <td>${escapeHtml(record.number)}</td>
+            <td class="${statusClass}">
+                ${escapeHtml(record.status)}
+            </td>
+        `;
 
 
-      body.appendChild(tr);
+        body.appendChild(row);
 
-    }
-  );
+    });
+
+
+    updateStats(records);
 
 }
 
 
-
-/* =========================
+/* =========================================
    ESCAPE HTML
-========================= */
+========================================= */
 
-function escapeHtml(value) {
+function escapeHtml(value){
 
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
 
-
-/* =========================
+/* =========================================
    UPDATE STATS
-========================= */
+========================================= */
 
-function updateStats() {
+function updateStats(records){
 
-  const help =
-    extractedRows.filter(
-      r => r.status === "Help"
-    ).length;
+    document.getElementById("uniqueCount").textContent =
+        records.length;
 
 
-  const time =
-    extractedRows.filter(
-      r => r.status === "Time"
-    ).length;
+    document.getElementById("helpCount").textContent =
+        records.filter(r => r.status === "Help").length;
 
 
-  const others =
-    extractedRows.filter(
-      r => r.status === "Others"
-    ).length;
+    document.getElementById("timeCount").textContent =
+        records.filter(r => r.status === "Time").length;
 
 
-  document.getElementById(
-    "uniqueCount"
-  ).textContent =
-    extractedRows.length;
+    document.getElementById("othersCount").textContent =
+        records.filter(r => r.status === "Others").length;
 
 
-  document.getElementById(
-    "helpCount"
-  ).textContent =
-    help;
-
-
-  document.getElementById(
-    "timeCount"
-  ).textContent =
-    time;
-
-
-  document.getElementById(
-    "othersCount"
-  ).textContent =
-    others;
-
-
-  document.getElementById(
-    "numberCount"
-  ).textContent =
-    extractedRows.length;
+    document.getElementById("numberCount").textContent =
+        new Set(records.map(r => r.number)).size;
 
 }
 
 
+/* =========================================
+   EXTRACT BUTTON
+========================================= */
 
-/* =========================
-   DOWNLOAD CSV
-========================= */
+document
+.getElementById("extractBtn")
+.addEventListener("click",()=>{
 
-function downloadCSV() {
-
-  if (extractedRows.length === 0) {
-
-    alert(
-      "No data available to download."
-    );
-
-    return;
-
-  }
+    const file =
+        document.getElementById("fileInput").files[0];
 
 
-  let csv =
-    "S.No,Chat Time,Participant Name,Extracted Number,Status\n";
+    const message =
+        document.getElementById("message");
 
 
-  extractedRows.forEach(
-    (row, index) => {
+    if(!file){
 
-      csv +=
-        `${index + 1},` +
-        `"${escapeCSV(row.time)}",` +
-        `"${escapeCSV(row.name)}",` +
-        `"${escapeCSV(row.number)}",` +
-        `"${escapeCSV(row.status)}"\n`;
+        message.textContent =
+            "Please select a Zoom TXT file.";
 
+        return;
     }
-  );
 
 
-  const blob =
-    new Blob(
-      ["\uFEFF" + csv],
-      {
-        type: "text/csv;charset=utf-8;"
-      }
-    );
+    const reader = new FileReader();
 
 
-  const url =
-    URL.createObjectURL(blob);
+    reader.onload = function(e){
+
+        try{
+
+            const text = e.target.result;
 
 
-  const a =
-    document.createElement("a");
+            const messages =
+                parseZoomChat(text);
 
 
-  a.href = url;
+            if(messages.length === 0){
 
-  a.download =
-    "zoom_chat_extracted.csv";
+                finalResults = [];
 
+                renderTable([]);
 
-  document.body.appendChild(a);
+                message.textContent =
+                    "No Zoom chat messages found. Please check the TXT format.";
 
-  a.click();
-
-  document.body.removeChild(a);
-
-
-  URL.revokeObjectURL(url);
-
-}
+                return;
+            }
 
 
-
-/* =========================
-   ESCAPE CSV
-========================= */
-
-function escapeCSV(value) {
-
-  return String(value || "")
-    .replace(/"/g, '""');
-
-}
+            const records =
+                buildCustomerRecords(messages);
 
 
-
-/* =========================
-   CLEAR
-========================= */
-
-function clearData() {
-
-  extractedRows = [];
+            const uniqueRecords =
+                removeDuplicates(records);
 
 
-  document.getElementById(
-    "resultBody"
-  ).innerHTML = "";
+            finalResults =
+                sortByChatTime(uniqueRecords);
 
 
-  document.getElementById(
-    "fileInput"
-  ).value = "";
+            renderTable(finalResults);
 
 
-  document.getElementById(
-    "uniqueCount"
-  ).textContent = "0";
+            if(finalResults.length === 0){
+
+                message.textContent =
+                    "File uploaded, but no 10-digit phone number was found.";
+
+            }
+            else{
+
+                message.textContent =
+                    `Successfully extracted ${finalResults.length} unique number(s).`;
+
+            }
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            message.textContent =
+                "Error reading the file. Please check the Zoom TXT format.";
+
+        }
+
+    };
 
 
-  document.getElementById(
-    "helpCount"
-  ).textContent = "0";
+    reader.readAsText(file);
+
+});
 
 
-  document.getElementById(
-    "timeCount"
-  ).textContent = "0";
+/* =========================================
+   DOWNLOAD CSV
+========================================= */
+
+document
+.getElementById("downloadBtn")
+.addEventListener("click",()=>{
+
+    if(finalResults.length === 0){
+
+        alert("Please extract the chat first.");
+
+        return;
+    }
 
 
-  document.getElementById(
-    "othersCount"
-  ).textContent = "0";
+    let csv =
+        "S.No,Chat Time,Participant Name,Extracted Number,Status\n";
 
 
-  document.getElementById(
-    "numberCount"
-  ).textContent = "0";
+    finalResults.forEach((record,index)=>{
+
+        csv +=
+            `${index + 1},` +
+            `"${record.time.replace(/"/g,'""')}",` +
+            `"${record.name.replace(/"/g,'""')}",` +
+            `"${record.number}",` +
+            `"${record.status}"\n`;
+
+    });
 
 
-  document.getElementById(
-    "message"
-  ).style.display = "none";
+    const blob =
+        new Blob([csv],{
+            type:"text/csv;charset=utf-8;"
+        });
 
-}
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+    a.download = "zoom_chat_extracted.csv";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+
+});
+
+
+/* =========================================
+   PRINT / PDF
+========================================= */
+
+document
+.getElementById("printBtn")
+.addEventListener("click",()=>{
+
+    if(finalResults.length === 0){
+
+        alert("Please extract the chat first.");
+
+        return;
+    }
+
+    window.print();
+
+});
 
 </script>
 
